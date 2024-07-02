@@ -65,4 +65,8 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
+
+    public User getUserByLogin(String login) {
+        return userRepository.findByLogin(login).orElse(null);
+    }
 }

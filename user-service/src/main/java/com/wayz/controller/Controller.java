@@ -27,21 +27,25 @@ public class Controller {
     }
 
     @GetMapping("/update")
-    public ResponseEntity<String> update(@RequestBody User user) {
-        return new ResponseEntity<>("Updated User: " + userService.updateUser(user), HttpStatus.OK);
+    public ResponseEntity<User> update(@RequestBody User user) {
+        return ResponseEntity.ok(userService.updateUser(user));
     }
 
     @GetMapping("/getUserById")
-    public ResponseEntity<String> getUserById(@RequestParam Long id) {
-        userService.getUserById(id);
-        return new ResponseEntity<>("User with id: " + id + " found", HttpStatus.OK);
+    public ResponseEntity<User> getUserById(@RequestParam Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
-    @GetMapping("/{userId}/orders")
-    public ResponseEntity<String> getUserOrders(@PathVariable Long userId) {
-        String url = "http://localhost:8081/orders/user/" + userId;
-        String response = restTemplate.getForObject(url, String.class);
-        return ResponseEntity.ok(response);
+    @GetMapping("/getUserByLogin")
+    public ResponseEntity<User> getUserByLogin(@RequestParam String login) {
+        return ResponseEntity.ok(userService.getUserByLogin(login));
     }
+
+    // TODO: Реализовать доступ к заказам через сервис пользователей
+//    @GetMapping("/{userId}/orders")
+//    public ResponseEntity<String> getUserOrders(@PathVariable Long userId) {
+//        //
+//        return ResponseEntity.ok(response);
+//    }
 
 }
