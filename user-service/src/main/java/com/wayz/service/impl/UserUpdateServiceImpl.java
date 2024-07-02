@@ -39,7 +39,7 @@ public class UserUpdateServiceImpl implements UserUpdateService {
      * @param userToUpdateDetails новые данные пользователя для его обновления
      */
     @Override
-    public void updateUser(User userToUpdateDetails) {
+    public User updateUser(User userToUpdateDetails) {
         Optional<User> optionalCurrentUser = userRepository.findByLogin(userToUpdateDetails.getLogin());
         User userToUpdate = optionalCurrentUser.orElseThrow(() -> {
             log.error("User update error. Can't find user by login: {}", userToUpdateDetails.getLogin());
@@ -50,6 +50,7 @@ public class UserUpdateServiceImpl implements UserUpdateService {
 
         userRepository.save(userToUpdate);
         log.info("User updated successfully: {}", userToUpdateDetails.getLogin());
+        return userToUpdate;
     }
 
     /**

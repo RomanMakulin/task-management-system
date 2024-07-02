@@ -51,8 +51,8 @@ public class UserServiceImpl implements UserService {
      * @param userDetails данные для обновления
      */
     @Override
-    public void updateUser(User userDetails) {
-        userUpdateServiceImpl.updateUser(userDetails);
+    public User updateUser(User userDetails) {
+        return userUpdateServiceImpl.updateUser(userDetails);
     }
 
     /**

@@ -28,8 +28,7 @@ public class Controller {
 
     @GetMapping("/update")
     public ResponseEntity<String> update(@RequestBody User user) {
-        userService.updateUser(user);
-        return new ResponseEntity<>("Updated User: " + user, HttpStatus.OK);
+        return new ResponseEntity<>("Updated User: " + userService.updateUser(user), HttpStatus.OK);
     }
 
     @GetMapping("/getUserById")
