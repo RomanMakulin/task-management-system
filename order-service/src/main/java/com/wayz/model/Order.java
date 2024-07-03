@@ -23,9 +23,8 @@ public class Order {
     @Column(name = "order_date")
     private ZonedDateTime orderDate;
 
-    @Column(name = "order_status")
     @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus;
+    private OrderStatus status;
 
     @Embedded
     private OrderAddress orderAddress;

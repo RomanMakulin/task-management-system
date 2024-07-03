@@ -1,6 +1,5 @@
 package com.wayz.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.wayz.dto.Notification;
 import com.wayz.dto.User;
@@ -8,7 +7,6 @@ import com.wayz.model.Order;
 import com.wayz.model.OrderStatus;
 import com.wayz.repository.OrderRepository;
 import com.wayz.service.OrderService;
-import com.wayz.service.UserServiceClient;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +26,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
-    private final UserServiceClient userServiceClient;
+    private final UserServiceClientImpl userServiceClientImpl;
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
@@ -36,11 +34,13 @@ public class OrderServiceImpl implements OrderService {
 
     private static final String TOPIC = "order-topic";
 
-    public OrderServiceImpl(OrderRepository orderRepository, UserServiceClient userServiceClient, KafkaTemplate<String, String> kafkaTemplate, JsonMapper mapper) {
+    public OrderServiceImpl(OrderRepository orderRepository,
+                            UserServiceClientImpl userServiceClientImpl,
+                            KafkaTemplate<String, String> kafkaTemplate) {
         this.orderRepository = orderRepository;
-        this.userServiceClient = userServiceClient;
+        this.userServiceClientImpl = userServiceClientImpl;
         this.kafkaTemplate = kafkaTemplate;
-        this.mapper = mapper;
+        this.mapper = new JsonMapper();
     }
 
     /**
@@ -52,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
         Notification notification = new Notification();
 
         try {
-            User user = userServiceClient.getUser(order.getUserId());
+            User user = userServiceClientImpl.getUser(order.getUserId());
 
             Optional.ofNullable(user.getEmail()).ifPresent(notification::setEmail);
             Optional.ofNullable(user.getFirstName()).ifPresent(notification::setFirstName);
@@ -78,11 +78,12 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Order createOrder(Order orderDetails) {
+        log.info("Order create with orderDetails: {}" + orderDetails);
         try {
-            if (userServiceClient.getUser(orderDetails.getUserId()) != null) {
+            if (userServiceClientImpl.getUser(orderDetails.getUserId()) != null) {
                 Order newOrder = new Order();
                 newOrder.setOrderDate(ZonedDateTime.now());
-                newOrder.setOrderStatus(OrderStatus.CREATED);
+                newOrder.setStatus(OrderStatus.CREATED);
                 newOrder.setOrderAddress(orderDetails.getOrderAddress());
                 newOrder.setItems(orderDetails.getItems());
                 newOrder.setUserId(orderDetails.getUserId());
@@ -107,7 +108,7 @@ public class OrderServiceImpl implements OrderService {
         try {
             Optional<Order> orderToUpdate = orderRepository.findById(orderDetails.getID());
             if (orderToUpdate.isPresent()) {
-                orderDetails.setOrderStatus(OrderStatus.UPDATED);
+                orderDetails.setStatus(OrderStatus.UPDATED);
                 orderRepository.save(orderDetails);
                 sendOrder(orderDetails);
                 return orderDetails;
