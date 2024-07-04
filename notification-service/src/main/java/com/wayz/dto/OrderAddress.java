@@ -1,11 +1,9 @@
-package com.wayz.model.submodels;
+package com.wayz.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Embeddable;
 import lombok.Data;
 
 @Data
-@Embeddable
 public class OrderAddress {
 
     @JsonProperty
@@ -22,4 +20,5 @@ public class OrderAddress {
 
     @JsonProperty
     private String description;
+
 }

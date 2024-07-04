@@ -1,13 +1,11 @@
-package com.wayz.model.submodels;
+package com.wayz.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
-@Embeddable
 public class OrderItem {
 
     @JsonProperty
@@ -18,4 +16,5 @@ public class OrderItem {
 
     @JsonProperty
     private BigDecimal price;
+
 }

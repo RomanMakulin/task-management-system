@@ -1,8 +1,9 @@
-package com.wayz.model;
+package com.wayz.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum OrderStatus {
+
     @JsonProperty
     CREATED,
 
@@ -11,4 +12,5 @@ public enum OrderStatus {
 
     @JsonProperty
     DELETED
+
 }

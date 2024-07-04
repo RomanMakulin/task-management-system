@@ -1,5 +1,6 @@
 package com.wayz.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.wayz.dto.Notification;
 import com.wayz.dto.User;
@@ -30,17 +31,17 @@ public class OrderServiceImpl implements OrderService {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-    private final JsonMapper mapper;
+    private final ObjectMapper mapper;
 
     private static final String TOPIC = "order-topic";
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             UserServiceClientImpl userServiceClientImpl,
-                            KafkaTemplate<String, String> kafkaTemplate) {
+                            KafkaTemplate<String, String> kafkaTemplate, ObjectMapper mapper) {
         this.orderRepository = orderRepository;
         this.userServiceClientImpl = userServiceClientImpl;
         this.kafkaTemplate = kafkaTemplate;
-        this.mapper = new JsonMapper();
+        this.mapper = mapper;
     }
 
     /**
@@ -48,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
      *
      * @param order order или любое другое сообщение для сервиса нотификаций
      */
-    public void sendOrder(Order order) {
+    public void orderNotifyKafka(Order order) {
         Notification notification = new Notification();
 
         try {
@@ -82,13 +83,13 @@ public class OrderServiceImpl implements OrderService {
         try {
             if (userServiceClientImpl.getUser(orderDetails.getUserId()) != null) {
                 Order newOrder = new Order();
-                newOrder.setOrderDate(ZonedDateTime.now());
-                newOrder.setStatus(OrderStatus.CREATED);
+                newOrder.setOrderDate(ZonedDateTime.now()); //TODO возможно из-за этого падает
+                newOrder.setStatus(OrderStatus.CREATED); //TODO возможно из-за этого падает
                 newOrder.setOrderAddress(orderDetails.getOrderAddress());
                 newOrder.setItems(orderDetails.getItems());
                 newOrder.setUserId(orderDetails.getUserId());
 
-                sendOrder(orderDetails);
+                orderNotifyKafka(newOrder);
                 orderRepository.save(newOrder);
                 return newOrder;
             } else throw new NullPointerException("User not found. Please try again to create order.");
@@ -110,7 +111,7 @@ public class OrderServiceImpl implements OrderService {
             if (orderToUpdate.isPresent()) {
                 orderDetails.setStatus(OrderStatus.UPDATED);
                 orderRepository.save(orderDetails);
-                sendOrder(orderDetails);
+                orderNotifyKafka(orderDetails);
                 return orderDetails;
             } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order ID must not be null");
         } catch (Exception e) {
