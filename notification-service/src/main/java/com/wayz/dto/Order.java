@@ -1,5 +1,6 @@
 package com.wayz.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -8,22 +9,11 @@ import java.util.List;
 
 @Data
 public class Order {
-
-    @JsonProperty
-    private Long ID;
-
-    @JsonProperty
+    @JsonAlias({"ID", "id"})
+    private Long id; // Объединяем значения полей ID и id в одно поле
     private Long userId;
-
-    @JsonProperty
     private ZonedDateTime orderDate;
-
-    @JsonProperty
     private OrderStatus status;
-
-    @JsonProperty
     private OrderAddress orderAddress;
-
-    @JsonProperty
     private List<OrderItem> items;
 }

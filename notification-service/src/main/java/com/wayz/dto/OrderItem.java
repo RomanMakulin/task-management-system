@@ -7,14 +7,7 @@ import java.math.BigDecimal;
 
 @Data
 public class OrderItem {
-
-    @JsonProperty
     private String name;
-
-    @JsonProperty
     private int quantity;
-
-    @JsonProperty
     private BigDecimal price;
-
 }

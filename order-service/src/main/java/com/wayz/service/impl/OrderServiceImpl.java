@@ -65,7 +65,7 @@ public class OrderServiceImpl implements OrderService {
 
             String orderJson = mapper.writeValueAsString(notification);
             kafkaTemplate.send(TOPIC, mapper.writeValueAsString(orderJson));
-            log.info("Информация о заказе {} отправлена в notification-service", notification);
+            log.info("Информация о заказе {} отправлена в notification-service\nJSON: {}", notification, orderJson);
         } catch (Exception e) {
             throw new RuntimeException("Ошибка отправки объекта заказа в сервис нотификаций.");
         }
@@ -83,8 +83,8 @@ public class OrderServiceImpl implements OrderService {
         try {
             if (userServiceClientImpl.getUser(orderDetails.getUserId()) != null) {
                 Order newOrder = new Order();
-                newOrder.setOrderDate(ZonedDateTime.now()); //TODO возможно из-за этого падает
-                newOrder.setStatus(OrderStatus.CREATED); //TODO возможно из-за этого падает
+                newOrder.setOrderDate(ZonedDateTime.now());
+                newOrder.setStatus(OrderStatus.CREATED);
                 newOrder.setOrderAddress(orderDetails.getOrderAddress());
                 newOrder.setItems(orderDetails.getItems());
                 newOrder.setUserId(orderDetails.getUserId());

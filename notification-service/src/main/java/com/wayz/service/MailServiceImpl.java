@@ -41,7 +41,7 @@ public class MailServiceImpl implements MailService {
             case DELETED -> emailTopic = "Ваш заказ удален.";
             default -> throw new IllegalStateException("Unexpected value: " + notification.getOrder().getStatus());
         }
-        mailConfig.messageManage(messageBody, toUserEmail, emailTopic);
+        mailConfig.messageManage(toUserEmail, messageBody, emailTopic);
     }
 
 

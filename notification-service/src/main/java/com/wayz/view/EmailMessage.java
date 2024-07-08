@@ -23,7 +23,7 @@ public class EmailMessage {
         sb.append("Телефон: ").append(notification.getPhone()).append("\n");
         sb.append("=================================\n");
         sb.append("Информация о заказе\n");
-        sb.append("ID заказа: ").append(notification.getOrder().getID()).append("\n");
+        sb.append("ID заказа: ").append(notification.getOrder().getId()).append("\n");
         sb.append("ID пользователя: ").append(notification.getOrder().getUserId()).append("\n");
         sb.append("Дата заказа: ").append(notification.getOrder().getOrderDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss"))).append("\n");
         sb.append("Статус: ").append(notification.getOrder().getStatus()).append("\n");
