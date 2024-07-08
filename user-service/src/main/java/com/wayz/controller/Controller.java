@@ -13,11 +13,9 @@ public class Controller {
 
     private final UserService userService;
 
-    private final RestTemplate restTemplate;
 
     public Controller(UserService userService, RestTemplate restTemplate) {
         this.userService = userService;
-        this.restTemplate = restTemplate;
     }
 
     @GetMapping("/registration")

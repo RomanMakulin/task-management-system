@@ -7,6 +7,7 @@ import com.wayz.service.UserUpdateService;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Email already exists");
         }
         try {
+            user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
             userRepository.save(user);
             log.info("User registered successfully: {}", user.getLogin());
         } catch (Exception e) {

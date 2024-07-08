@@ -13,12 +13,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/orders")
 public class Controller {
 
+    /**
+     * Сервис работы (логики) с заказами
+     */
     private final OrderService orderService;
 
     public Controller(OrderService orderService, OrderService orderService1) {
         this.orderService = orderService1;
     }
 
+    /**
+     * Создание нового заказа
+     *
+     * @param order детали заказа
+     * @return ответ о статусе создания заказа, содержащий заказ
+     */
     @GetMapping("/create")
     public ResponseEntity<Order> create(@RequestBody Order order) {
         return ResponseEntity.ok(orderService.createOrder(order));
