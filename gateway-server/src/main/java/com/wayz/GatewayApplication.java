@@ -15,16 +15,5 @@ public class GatewayApplication {
 		SpringApplication.run(GatewayApplication.class, args);
 	}
 
-	@Bean
-	public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
-		return builder.routes()
-				.route("user-service",r->r.path("/users/**")
-						.uri("http://localhost:8081/"))
-				.route("order-service",r->r.path("/orders/**")
-						.uri("http://localhost:8082/"))
-				.route("notification-service",r->r.path("/notification/**")
-						.uri("http://localhost:9092/")).build();
-	}
 
 }
-

@@ -2,15 +2,13 @@ package com.wayz.controller;
 
 import com.wayz.model.User;
 import com.wayz.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/users/auth")
 public class RegistrationController {
 
     private final UserService userService;
@@ -19,9 +17,15 @@ public class RegistrationController {
         this.userService = userService;
     }
 
-    @GetMapping("/registration")
+    @PostMapping("/registration")
     public ResponseEntity<String> registration(@RequestBody User user) {
         userService.registerUser(user);
         return new ResponseEntity<>("Registered new User: " + user, HttpStatus.CREATED);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody User user) {
+        return ResponseEntity.ok(userService.loginUser(user)).getBody();
+    }
+
 }

@@ -1,8 +1,9 @@
 package com.wayz.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.wayz.dto.Notification;
+import com.wayz.dto.CreateOrderDto;
+import com.wayz.dto.UpdateOrderDto;
 import com.wayz.dto.User;
 import com.wayz.model.Order;
 import com.wayz.model.OrderStatus;
@@ -49,12 +50,10 @@ public class OrderServiceImpl implements OrderService {
      *
      * @param order order или любое другое сообщение для сервиса нотификаций
      */
-    public void orderNotifyKafka(Order order) {
+    public void orderNotifyKafka(Order order, User user) {
         Notification notification = new Notification();
 
         try {
-            User user = userServiceClientImpl.getUser(order.getUserId());
-
             Optional.ofNullable(user.getEmail()).ifPresent(notification::setEmail);
             Optional.ofNullable(user.getFirstName()).ifPresent(notification::setFirstName);
             Optional.ofNullable(user.getLastName()).ifPresent(notification::setLastName);
@@ -74,28 +73,54 @@ public class OrderServiceImpl implements OrderService {
     /**
      * Создание заказа с проверкой существует ли такой пользователь в системе
      *
-     * @param orderDetails данные заказа
+     * @param createOrderDto данные заказа
      * @return созданный заказ
      */
     @Override
-    public Order createOrder(Order orderDetails) {
-        log.info("Order create with orderDetails: {}" + orderDetails);
-        try {
-            if (userServiceClientImpl.getUser(orderDetails.getUserId()) != null) {
-                Order newOrder = new Order();
-                newOrder.setOrderDate(ZonedDateTime.now());
-                newOrder.setStatus(OrderStatus.CREATED);
-                newOrder.setOrderAddress(orderDetails.getOrderAddress());
-                newOrder.setItems(orderDetails.getItems());
-                newOrder.setUserId(orderDetails.getUserId());
+    public Order createOrder(CreateOrderDto createOrderDto) {
+        validateOrder(createOrderDto);
 
-                orderNotifyKafka(newOrder);
-                orderRepository.save(newOrder);
-                return newOrder;
-            } else throw new NullPointerException("User not found. Please try again to create order.");
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        log.info("Создание заказа для пользователя: {}", createOrderDto.getLogin());
+
+        User user = userServiceClientImpl.getUserByLogin(createOrderDto.getLogin());
+        Order newOrder = buildOrder(createOrderDto, user);
+
+        orderNotifyKafka(newOrder, user);
+        orderRepository.save(newOrder);
+        log.info("Order created: {}", newOrder);
+        return newOrder;
+    }
+
+    /**
+     * Проверка валидности полей из запроса на создание заказа
+     *
+     * @param createOrderDto данные запроса
+     */
+    public void validateOrder(CreateOrderDto createOrderDto) {
+        if (createOrderDto.getLogin() == null || createOrderDto.getLogin().isEmpty()) {
+            throw new IllegalArgumentException("Ошибка создания заказа. Не передан login пользователя");
         }
+
+        if (createOrderDto.getOrderAddress() == null || createOrderDto.getItems() == null || createOrderDto.getItems().isEmpty()) {
+            throw new IllegalArgumentException("Ошибка создания заказа. Не переданы обязательные параметры для формирования заказа");
+        }
+    }
+
+    /**
+     * Билдер создания заказа по переданным данным из Dto
+     *
+     * @param createOrderDto данные из запроса о создании заказа
+     * @param user           пользователь данного заказа
+     * @return созданный объект заказа
+     */
+    public Order buildOrder(CreateOrderDto createOrderDto, User user) {
+        Order newOrder = new Order();
+        newOrder.setUserId(user.getID());
+        newOrder.setOrderDate(ZonedDateTime.now());
+        newOrder.setStatus(OrderStatus.CREATED);
+        newOrder.setOrderAddress(createOrderDto.getOrderAddress());
+        newOrder.setItems(createOrderDto.getItems());
+        return newOrder;
     }
 
     /**
@@ -105,18 +130,30 @@ public class OrderServiceImpl implements OrderService {
      * @return обновленный заказ
      */
     @Override
-    public Order updateOrder(Order orderDetails) {
-        try {
-            Optional<Order> orderToUpdate = orderRepository.findById(orderDetails.getID());
-            if (orderToUpdate.isPresent()) {
-                orderDetails.setStatus(OrderStatus.UPDATED);
-                orderRepository.save(orderDetails);
-                orderNotifyKafka(orderDetails);
-                return orderDetails;
-            } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order ID must not be null");
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+    public Order updateOrder(UpdateOrderDto orderDetails) {
+
+        Order orderToUpdate = findOrderById(orderDetails);
+        User user = userServiceClientImpl.getUserByLogin(orderDetails.getLogin());
+
+        orderToUpdate.setStatus(OrderStatus.UPDATED);
+        Optional.ofNullable(orderDetails.getOrderAddress()).ifPresent(orderToUpdate::setOrderAddress);
+        Optional.ofNullable(orderDetails.getItems()).ifPresent(orderToUpdate::setItems);
+
+        orderNotifyKafka(orderToUpdate, user);
+        orderRepository.save(orderToUpdate);
+        log.info("Order updated: {}", orderToUpdate);
+        return orderToUpdate;
+    }
+
+    /**
+     * Поиск заказа по id
+     *
+     * @param orderDetails данные из запроса
+     * @return объект заказа если найдет
+     */
+    public Order findOrderById(UpdateOrderDto orderDetails) {
+        return orderRepository.findById(orderDetails.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order not found for given ID"));
     }
 
     /**
