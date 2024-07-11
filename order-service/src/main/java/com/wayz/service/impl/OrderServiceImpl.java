@@ -85,8 +85,8 @@ public class OrderServiceImpl implements OrderService {
         User user = userServiceClientImpl.getUserByLogin(createOrderDto.getLogin());
         Order newOrder = buildOrder(createOrderDto, user);
 
-        orderNotifyKafka(newOrder, user);
         orderRepository.save(newOrder);
+        orderNotifyKafka(newOrder, user);
         log.info("Order created: {}", newOrder);
         return newOrder;
     }
