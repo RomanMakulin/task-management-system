@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,11 +16,8 @@ public class AuthController {
 
     private final AuthService authService;
 
-    private AuthenticationManager authenticationManager;
-
-    public AuthController(AuthService authService, AuthenticationManager authenticationManager) {
+    public AuthController(AuthService authService) {
         this.authService = authService;
-        this.authenticationManager = authenticationManager;
     }
 
     @PostMapping("/registration")
@@ -29,17 +27,12 @@ public class AuthController {
 
     @PostMapping("/token")
     public ResponseEntity<String> getToken(@RequestBody AuthRequest authRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getLogin(), authRequest.getPassword()));
-        if (authentication.isAuthenticated()) {
-            return ResponseEntity.ok(authService.generateToken(authRequest.getLogin()));
-        } else return ResponseEntity.badRequest().build();
+        return authService.loginUser(authRequest);
     }
 
     @GetMapping("/validate")
     public ResponseEntity<String> validateToken(@RequestParam("token") String token) {
         authService.validateToken(token);
-        return ResponseEntity.ok("Token validated: " + token);
+        return ResponseEntity.ok("Токен прошел проверку и действителен!");
     }
-
 }

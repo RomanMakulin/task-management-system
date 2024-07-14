@@ -74,15 +74,16 @@ public class OrderServiceImpl implements OrderService {
      * Создание заказа с проверкой существует ли такой пользователь в системе
      *
      * @param createOrderDto данные заказа
+     * @param token
      * @return созданный заказ
      */
     @Override
-    public Order createOrder(CreateOrderDto createOrderDto) {
+    public Order createOrder(CreateOrderDto createOrderDto, String token) {
         validateOrder(createOrderDto);
 
         log.info("Создание заказа для пользователя: {}", createOrderDto.getLogin());
 
-        User user = userServiceClientImpl.getUserByLogin(createOrderDto.getLogin());
+        User user = userServiceClientImpl.getUserByLogin(createOrderDto.getLogin(), token);
         Order newOrder = buildOrder(createOrderDto, user);
 
         orderRepository.save(newOrder);
@@ -130,10 +131,10 @@ public class OrderServiceImpl implements OrderService {
      * @return обновленный заказ
      */
     @Override
-    public Order updateOrder(UpdateOrderDto orderDetails) {
+    public Order updateOrder(UpdateOrderDto orderDetails, String token) {
 
         Order orderToUpdate = findOrderById(orderDetails);
-        User user = userServiceClientImpl.getUserByLogin(orderDetails.getLogin());
+        User user = userServiceClientImpl.getUserByLogin(orderDetails.getLogin(), token);
 
         orderToUpdate.setStatus(OrderStatus.UPDATED);
         Optional.ofNullable(orderDetails.getOrderAddress()).ifPresent(orderToUpdate::setOrderAddress);
@@ -159,11 +160,12 @@ public class OrderServiceImpl implements OrderService {
     /**
      * Получение заказа по уникальному идентификатору
      *
-     * @param id уникальный идентификатор заказа
+     * @param id    уникальный идентификатор заказа
+     * @param token
      * @return объект заказа
      */
     @Override
-    public Order getOrderById(Long id) {
+    public Order getOrderById(Long id, String token) {
         Optional<Order> order = orderRepository.findById(id);
         return order.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
     }

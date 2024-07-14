@@ -29,24 +29,28 @@ public class UserServiceClientImpl implements UserServiceClient {
     }
 
     @Override
-    public User getUserById(Long userId) {
+    public User getUserById(Long userId, String token) {
         String url = constructUrl("getUserById", userId.toString());
-        return sendRequest(url);
+        return sendRequest(url, token);
     }
 
     @Override
-    public User getUserByLogin(String userLogin) {
+    public User getUserByLogin(String userLogin, String token) {
         String url = constructUrl("getUserByLogin", userLogin);
-        return sendRequest(url);
+        return sendRequest(url, token);
     }
 
     private String constructUrl(String endpoint, String parameter) {
         return String.format("%s/%s/%s", userServiceUrl, endpoint, parameter);
     }
 
-    private User sendRequest(String url) {
+    private User sendRequest(String url, String token) {
         try {
-            ResponseEntity<User> response = restTemplate.getForEntity(url, User.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.set(HttpHeaders.AUTHORIZATION, token); // Добавляем токен в заголовок
+            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+
+            ResponseEntity<User> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, User.class);
             log.info("Запрос в user-service успешно отправлен. Тело ответа: {}", response.getBody());
             return handleResponse(response);
         } catch (Exception e) {

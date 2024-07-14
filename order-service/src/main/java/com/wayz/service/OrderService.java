@@ -5,7 +5,7 @@ import com.wayz.dto.UpdateOrderDto;
 import com.wayz.model.Order;
 
 public interface OrderService {
-    Order createOrder(CreateOrderDto createOrderDto);
-    Order updateOrder(UpdateOrderDto orderDetails);
-    Order getOrderById(Long id);
+    Order createOrder(CreateOrderDto createOrderDto, String token);
+    Order updateOrder(UpdateOrderDto orderDetails, String token);
+    Order getOrderById(Long id, String token);
 }

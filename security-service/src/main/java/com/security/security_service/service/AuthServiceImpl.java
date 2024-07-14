@@ -1,10 +1,15 @@
 package com.security.security_service.service;
 
+import com.security.security_service.dto.AuthRequest;
 import com.security.security_service.model.User;
 import com.security.security_service.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,25 +17,22 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class AuthServiceImpl implements AuthService{
+public class AuthServiceImpl implements AuthService {
 
     private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
 
+    private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public AuthServiceImpl(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+        this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
     }
 
-    /**
-     * Логика регистрации пользователя
-     *
-     * @param user передаваемый пользователь
-     */
     @Override
     public User registerUser(User user) {
         if (userRepository.existsByLogin(user.getLogin())) {
@@ -39,47 +41,38 @@ public class AuthServiceImpl implements AuthService{
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
-        try {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            userRepository.save(user);
-            log.info("User registered successfully: {}", user.getLogin());
-        } catch (Exception e) {
-            log.error("User registered error: {}", e.getMessage());
-        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+        log.info("User registered successfully: {}", user.getLogin());
         return user;
     }
 
-    /**
-     * Логика входа пользователя в систему с проверкой пароля и установкой куки хранения JWT токена
-     *
-     * @param user данные авторизуемого пользователя
-     * @return статус выполнения запроса
-     */
+//    @Override
+//    public ResponseEntity<String> loginUser(User user) {
+//        Optional<User> existingUser = userRepository.findByLogin(user.getLogin());
+//        if (existingUser.isPresent() && passwordEncoder.matches(user.getPassword(), existingUser.get().getPassword())) {
+//            return ResponseEntity.ok("Login successful. Login: " + user.getLogin());
+//        } else {
+//            return ResponseEntity.status(403).body("Incorrect login or password");
+//        }
+//    }
+
     @Override
-    public ResponseEntity<String> loginUser(User user) {
-        if (!checkPasswordForLogin(user)) {
-            return ResponseEntity.status(403).body("Incorrect password");
+    public ResponseEntity<String> loginUser(AuthRequest authRequest) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getLogin(), authRequest.getPassword()));
+            return ResponseEntity.ok(generateToken(authRequest.getLogin()));
+        } catch (AuthenticationException e) {
+            return ResponseEntity.badRequest().body("Invalid login or password");
         }
-        return ResponseEntity.ok("Login successful. Login: " + user.getLogin());
     }
 
-    /**
-     * Проверка пароля для авторизации пользователя
-     *
-     * @param user данные авторизуемого пользователя
-     * @return логическое значение
-     */
-    public boolean checkPasswordForLogin(User user) {
-        Optional<User> findUser = userRepository.findByLogin(user.getLogin());
-        return findUser.filter(value -> user.getLogin().equals(value.getLogin())).isPresent();
-    }
-
-    private String generateToken(String login){
+    public String generateToken(String login) {
         return jwtService.generateToken(login);
     }
 
     public void validateToken(String token) {
         jwtService.validateToken(token);
     }
-
 }

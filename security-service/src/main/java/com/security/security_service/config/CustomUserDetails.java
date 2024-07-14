@@ -19,7 +19,7 @@ public class CustomUserDetails implements UserDetails {
     public CustomUserDetails(User user) {
         this.username = user.getLogin();
         this.password = user.getPassword();
-        this.email = user.getPassword();
+        this.email = user.getEmail();
     }
 
     @Override
