@@ -9,6 +9,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Кастомный класс от UserDetails
+ * Содержит информацию об авторизованном пользователе
+ */
 @Data
 public class CustomUserDetails implements UserDetails {
 

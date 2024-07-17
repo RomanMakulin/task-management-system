@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Класс сущность (таблица) в базе данных - users
+ */
 @Data
 @Entity
 @Table(name = "users")

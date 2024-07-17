@@ -17,18 +17,39 @@ import java.util.Map;
 @Service
 public class JwtService {
 
+    /**
+     * Секретный ключ для токенов
+     */
     @Value("${jwt.secret}")
     private String secret;
 
+    /**
+     * Валидация токена
+     *
+     * @param token передаваемый токен
+     */
     public void validateToken(final String token) {
         Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token);
     }
 
+    /**
+     * Генерация токена (создание)
+     *
+     * @param userName логин пользователя
+     * @return токен
+     */
     public String generateToken(String userName) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userName);
     }
 
+    /**
+     * Билдер создания токена
+     *
+     * @param claims   ключ значение для токенов
+     * @param userName логин пользователя
+     * @return токен
+     */
     private String createToken(Map<String, Object> claims, String userName) {
         return Jwts.builder()
                 .setClaims(claims)

@@ -16,9 +16,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Сервис авторизации пользователей
+ */
 @Service
 public class AuthServiceImpl implements AuthService {
 
+    /**
+     * Логгер
+     */
     private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
 
     private final AuthenticationManager authenticationManager;
@@ -33,6 +39,12 @@ public class AuthServiceImpl implements AuthService {
         this.jwtService = jwtService;
     }
 
+    /**
+     * Метод регистрации пользователей в системе
+     *
+     * @param user данные для регистрации пользователя
+     * @return сохраненный пользователь в БД
+     */
     @Override
     public User registerUser(User user) {
         if (userRepository.existsByLogin(user.getLogin())) {
@@ -47,16 +59,12 @@ public class AuthServiceImpl implements AuthService {
         return user;
     }
 
-//    @Override
-//    public ResponseEntity<String> loginUser(User user) {
-//        Optional<User> existingUser = userRepository.findByLogin(user.getLogin());
-//        if (existingUser.isPresent() && passwordEncoder.matches(user.getPassword(), existingUser.get().getPassword())) {
-//            return ResponseEntity.ok("Login successful. Login: " + user.getLogin());
-//        } else {
-//            return ResponseEntity.status(403).body("Incorrect login or password");
-//        }
-//    }
-
+    /**
+     * Логика входа в систему
+     *
+     * @param authRequest данные о пользователе, содержащие логин и пароль
+     * @return статус выполнения логирования
+     */
     @Override
     public ResponseEntity<String> loginUser(AuthRequest authRequest) {
         try {
@@ -68,10 +76,22 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    /**
+     * Генерация токена
+     *
+     * @param login логин пользователя
+     * @return токен
+     */
     public String generateToken(String login) {
         return jwtService.generateToken(login);
     }
 
+    /**
+     * Проверка токена на валидность
+     *
+     * @param token токен для проверки
+     */
+    @Override
     public void validateToken(String token) {
         jwtService.validateToken(token);
     }
