@@ -15,6 +15,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Сервис с логикой обновления пользователей
+ */
 @Service
 @Data
 public class UserUpdateServiceImpl implements UserUpdateService {

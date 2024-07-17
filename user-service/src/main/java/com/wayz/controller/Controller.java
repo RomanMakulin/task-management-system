@@ -4,42 +4,56 @@ import com.wayz.model.User;
 import com.wayz.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Основной контроллер управления пользователями
+ */
 @RestController
 @RequestMapping("/users")
 public class Controller {
 
-    private static final Logger log = LoggerFactory.getLogger(Controller.class);
+    /**
+     * Сервис с логикой управления пользователями
+     */
     private final UserService userService;
-
 
     public Controller(UserService userService, RestTemplate restTemplate) {
         this.userService = userService;
     }
 
-//    @GetMapping("/registration")
-//    public ResponseEntity<String> registration(@RequestBody User user) {
-//        userService.registerUser(user);
-//        return new ResponseEntity<>("Registered new User: " + user, HttpStatus.CREATED);
-//    }
-
-    @GetMapping("/update")
+    /**
+     * Запрос на обновление пользователя
+     *
+     * @param user тело запроса с данными о пользователе
+     * @return статус ответа сервера
+     */
+    @PostMapping("/update")
     public ResponseEntity<User> update(@RequestBody User user) {
         return ResponseEntity.ok(userService.updateUser(user));
     }
 
+    /**
+     * Запрос на получение пользователя по ID
+     *
+     * @param id user ID
+     * @return пользователь
+     */
     @GetMapping("/getUserById/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
+    /**
+     * Запрос на получение пользователя по логину
+     *
+     * @param login логин
+     * @return пользователь
+     */
     @GetMapping("/getUserByLogin/{login}")
     public ResponseEntity<User> getUserByLogin(@PathVariable String login) {
-        log.info("Запрос на получение пользователя с login: {}", login);
         return ResponseEntity.ok(userService.getUserByLogin(login));
     }
 

@@ -5,32 +5,34 @@ import com.wayz.repository.UserRepository;
 import com.wayz.service.UserService;
 import com.wayz.service.UserUpdateService;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.Optional;
 
+/**
+ * Сервис с логикой для управления пользователями
+ */
 @Service
 @Data
 public class UserServiceImpl implements UserService {
 
+    /**
+     * Логгер
+     */
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    @Getter
-    @Value("${jwt.secret}")
-    private String secretKey;
-
+    /**
+     * Репозиторий пользователей
+     */
     private final UserRepository userRepository;
 
+    /**
+     * Сервис обновления пользователей
+     */
     private final UserUpdateService userUpdateServiceImpl;
 
     public UserServiceImpl(UserRepository userRepository, UserUpdateService userUpdateServiceImpl) {
