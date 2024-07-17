@@ -10,6 +10,7 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
@@ -70,6 +71,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByLogin(String login) {
         return userRepository.findByLogin(login).orElse(null);
+    }
+
+    @Override
+    public ResponseEntity<String> deleteUser(Long id) {
+        try {
+            userRepository.deleteById(id);
+            return ResponseEntity.ok("Deleted user with id " + id);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body("User with id " + id + " not found");
+        }
     }
 
 }

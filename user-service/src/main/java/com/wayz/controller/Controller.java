@@ -2,8 +2,6 @@ package com.wayz.controller;
 
 import com.wayz.model.User;
 import com.wayz.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -57,11 +55,15 @@ public class Controller {
         return ResponseEntity.ok(userService.getUserByLogin(login));
     }
 
-    // TODO: Реализовать доступ к заказам через сервис пользователей
-//    @GetMapping("/{userId}/orders")
-//    public ResponseEntity<String> getUserOrders(@PathVariable Long userId) {
-//        //
-//        return ResponseEntity.ok(response);
-//    }
+    /**
+     * Удаление пользователя по ID
+     *
+     * @param id user ID
+     * @return статус обработки запроса
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+        return userService.deleteUser(id);
+    }
 
 }
