@@ -33,30 +33,32 @@ public class NotificationService {
     @KafkaListener(topics = "order-topic", groupId = "group_id")
     public void consume(String message) {
         try {
-            // Логирование исходного сообщения для отладки
-            log.info("Полученное JSON сообщение: {}", message);
-
-            // Убираем все обратные слэши и лишние кавычки
-            String decodedMessage = message.replace("\\\"", "\"")
-                    .replace("\\\\", "\\")
-                    .replace("\"{", "{")
-                    .replace("}\"", "}")
-                    .replace("\\", "");
-
-            // Убираем лишние кавычки в начале и в конце строки
-            if (decodedMessage.startsWith("\"") && decodedMessage.endsWith("\"")) {
-                decodedMessage = decodedMessage.substring(1, decodedMessage.length() - 1);
-            }
-
-            // Преобразуем исправленную строку в объект Notification
-            Notification notification = mapper.readValue(decodedMessage, Notification.class);
-
-            // Отправляем уведомление по email
+            Notification notification = mapper.readValue(decodedMessage(message), Notification.class);
             mailService.sendMailNotification(notification);
         } catch (Exception e) {
             log.info("Ошибка получения данных из order-service: {}", e);
         }
     }
 
+    /**
+     * Декодирует полученное сообщение в нужный формат JSON
+     *
+     * @param message полученное сообщение из kafka
+     * @return декодированное сообщение
+     */
+    public String decodedMessage(String message) {
+        // Убираем все обратные слэши и лишние кавычки
+        String decodedMessage = message.replace("\\\"", "\"")
+                .replace("\\\\", "\\")
+                .replace("\"{", "{")
+                .replace("}\"", "}")
+                .replace("\\", "");
+
+        // Убираем лишние кавычки в начале и в конце строки
+        if (decodedMessage.startsWith("\"") && decodedMessage.endsWith("\"")) {
+            decodedMessage = decodedMessage.substring(1, decodedMessage.length() - 1);
+        }
+        return decodedMessage;
+    }
 
 }
