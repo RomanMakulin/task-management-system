@@ -7,14 +7,27 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Общая конфигурация сервиса
+ */
 @Configuration
 public class AppConfig {
 
+    /**
+     * Бин restTemplate для его создания в контексте
+     *
+     * @return новый RestTemplate
+     */
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
 
+    /**
+     * Определяем objectMapper для корректной сериализации объектов
+     *
+     * @return
+     */
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();

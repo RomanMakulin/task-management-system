@@ -7,9 +7,11 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * DTO для обновления заказа
+ */
 @Data
 public class UpdateOrderDto {
-
     @JsonProperty
     private Long id;
 

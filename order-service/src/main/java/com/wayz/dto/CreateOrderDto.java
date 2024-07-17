@@ -6,9 +6,11 @@ import com.wayz.model.submodels.OrderItem;
 import lombok.Data;
 import java.util.List;
 
+/**
+ * DTO создания заказа
+ */
 @Data
 public class CreateOrderDto {
-
     @JsonProperty
     private String login;
 

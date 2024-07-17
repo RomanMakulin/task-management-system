@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wayz.model.Order;
 import lombok.Data;
 
+/**
+ * DTO для отправки нотификации
+ */
 @Data
 public class Notification {
     @JsonProperty

@@ -1,25 +1,29 @@
-package com.wayz.service;
+package com.wayz.service.impl;
 
 import com.wayz.config.MailConfig;
+import com.wayz.config.impl.MailConfigImpl;
 import com.wayz.dto.Notification;
-import com.wayz.dto.OrderItem;
-import com.wayz.dto.OrderStatus;
+import com.wayz.service.MailService;
 import com.wayz.view.EmailMessage;
+import com.wayz.view.impl.EmailMessageImpl;
 import lombok.Data;
-import org.springframework.mail.MailSender;
 import org.springframework.stereotype.Service;
-
-import java.time.format.DateTimeFormatter;
 
 @Data
 @Service
 public class MailServiceImpl implements MailService {
 
+    /**
+     * Конфигурация почты с методом отправки сообщения
+     */
     private final MailConfig mailConfig;
 
+    /**
+     * Конструктор сообщения для отправки
+     */
     private final EmailMessage emailMessage;
 
-    public MailServiceImpl(MailConfig mailConfig, EmailMessage emailMessage) {
+    public MailServiceImpl(MailConfigImpl mailConfig, EmailMessageImpl emailMessage) {
         this.mailConfig = mailConfig;
         this.emailMessage = emailMessage;
     }

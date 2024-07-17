@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import lombok.Data;
 
+/**
+ * DTO для определения пользователя
+ */
 @Data
 public class User {
 

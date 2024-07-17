@@ -8,6 +8,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Общий контроллер управления заказами
+ */
 @RestController
 @RequestMapping("/orders")
 public class Controller {
@@ -29,13 +32,20 @@ public class Controller {
      */
     @PostMapping("/create")
     public ResponseEntity<Order> create(@RequestBody CreateOrderDto order,
-                                        @RequestHeader (HttpHeaders.AUTHORIZATION) String token) {
+                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         return ResponseEntity.ok(orderService.createOrder(order, token));
     }
 
+    /**
+     * Обновление текущего заказа
+     *
+     * @param order тело запроса с новыми данными о заказе
+     * @param token токен авторизации запроса
+     * @return статус ответа с обновленным заказом
+     */
     @PostMapping("/update")
     public ResponseEntity<Order> update(@RequestBody UpdateOrderDto order,
-                                        @RequestHeader (HttpHeaders.AUTHORIZATION) String token) {
+                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         return ResponseEntity.ok(orderService.updateOrder(order, token));
     }
 

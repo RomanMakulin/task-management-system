@@ -21,9 +21,16 @@ import java.util.Map;
 @EnableKafka
 public class KafkaProducerConfig {
 
+    /**
+     * URL до сервера kafka
+     */
     @Value("${kafka.server.url}")
     private String kafkaServiceUrl;
 
+    /**
+     * Бин фабрики настройки producer
+     * @return ProducerFactory
+     */
     @Bean
     public ProducerFactory<String, String> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
@@ -33,6 +40,10 @@ public class KafkaProducerConfig {
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
+    /**
+     * Бин на создание kafka template
+     * @return new KafkaTemplate на основе producerFactory
+     */
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());

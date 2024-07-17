@@ -9,6 +9,7 @@ import com.wayz.model.Order;
 import com.wayz.model.OrderStatus;
 import com.wayz.repository.OrderRepository;
 import com.wayz.service.OrderService;
+import com.wayz.service.UserServiceClient;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,27 +21,48 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
+/**
+ * Сервис с логикой управления заказами
+ */
 @Service
 @Data
 public class OrderServiceImpl implements OrderService {
 
+    /**
+     * Логгер
+     */
     private final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 
+    /**
+     * Репозиторий заказов
+     */
     private final OrderRepository orderRepository;
 
-    private final UserServiceClientImpl userServiceClientImpl;
+    /**
+     * Сервис клиента работы с User-service (интеграция)
+     */
+    private final UserServiceClient userServiceClient;
 
+    /**
+     * Kafka template для передачи сообщений через топики
+     */
     private final KafkaTemplate<String, String> kafkaTemplate;
 
+    /**
+     * Маппер для обработки JSON
+     */
     private final ObjectMapper mapper;
 
+    /**
+     * Топик для передачи заказа в сервис нотификаций
+     */
     private static final String TOPIC = "order-topic";
 
     public OrderServiceImpl(OrderRepository orderRepository,
-                            UserServiceClientImpl userServiceClientImpl,
+                            UserServiceClientImpl userServiceClient,
                             KafkaTemplate<String, String> kafkaTemplate, ObjectMapper mapper) {
         this.orderRepository = orderRepository;
-        this.userServiceClientImpl = userServiceClientImpl;
+        this.userServiceClient = userServiceClient;
         this.kafkaTemplate = kafkaTemplate;
         this.mapper = mapper;
     }
@@ -83,7 +105,7 @@ public class OrderServiceImpl implements OrderService {
 
         log.info("Создание заказа для пользователя: {}", createOrderDto.getLogin());
 
-        User user = userServiceClientImpl.getUserByLogin(createOrderDto.getLogin(), token);
+        User user = userServiceClient.getUserByLogin(createOrderDto.getLogin(), token);
         Order newOrder = buildOrder(createOrderDto, user);
 
         orderRepository.save(newOrder);
@@ -133,8 +155,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order updateOrder(UpdateOrderDto orderDetails, String token) {
 
-        Order orderToUpdate = findOrderById(orderDetails);
-        User user = userServiceClientImpl.getUserByLogin(orderDetails.getLogin(), token);
+        Order orderToUpdate = findOrderByIdFromDto(orderDetails);
+        User user = userServiceClient.getUserByLogin(orderDetails.getLogin(), token);
 
         orderToUpdate.setStatus(OrderStatus.UPDATED);
         Optional.ofNullable(orderDetails.getOrderAddress()).ifPresent(orderToUpdate::setOrderAddress);
@@ -152,7 +174,7 @@ public class OrderServiceImpl implements OrderService {
      * @param orderDetails данные из запроса
      * @return объект заказа если найдет
      */
-    public Order findOrderById(UpdateOrderDto orderDetails) {
+    public Order findOrderByIdFromDto(UpdateOrderDto orderDetails) {
         return orderRepository.findById(orderDetails.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order not found for given ID"));
     }
@@ -161,7 +183,7 @@ public class OrderServiceImpl implements OrderService {
      * Получение заказа по уникальному идентификатору
      *
      * @param id    уникальный идентификатор заказа
-     * @param token
+     * @param token токен
      * @return объект заказа
      */
     @Override
