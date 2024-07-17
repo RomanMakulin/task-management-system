@@ -14,14 +14,27 @@ spring:
           uri: lb://user-service
           predicates:
             - Path=/users/**
+          filters:
+            - AuthenticationFilter
+
         - id: order-service
           uri: lb://order-service
           predicates:
             - Path=/orders/**
+          filters:
+            - AuthenticationFilter
+
         - id: notification-service
           uri: lb://notification-service
           predicates:
             - Path=/notification/**
+          filters:
+            - AuthenticationFilter
+
+        - id: security-service
+          uri: lb://security-service
+          predicates:
+            - Path=/auth/**
 
 eureka:
   client:

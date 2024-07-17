@@ -1,16 +1,16 @@
-package com.wayz.config.security;
+package com.security.security_service.config;
 
-import com.wayz.model.User;
-import com.wayz.repository.UserRepository;
+import com.security.security_service.model.User;
+import com.security.security_service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import java.util.Optional;
 
-@Service
+@Component
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
@@ -18,8 +18,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByLogin(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-        return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(), new ArrayList<>());
+        Optional<User> user = userRepository.findByLogin(username);
+        return user.map(CustomUserDetails::new).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 }
