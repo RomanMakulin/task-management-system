@@ -73,14 +73,19 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByLogin(login).orElse(null);
     }
 
+    /**
+     * Удаление пользователя из системы
+     *
+     * @param id идентификатор пользователя
+     * @return статус выполнения запроса
+     */
     @Override
     public ResponseEntity<String> deleteUser(Long id) {
-        try {
+        if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
             return ResponseEntity.ok("Deleted user with id " + id);
-        } catch (Exception e) {
-            return ResponseEntity.status(404).body("User with id " + id + " not found");
         }
+        return ResponseEntity.status(404).body("User with id " + id + " not found");
     }
 
 }
