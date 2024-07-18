@@ -1,15 +1,13 @@
 package com.wayz.service.impl;
 
 import com.wayz.dto.User;
+import com.wayz.exceptions.UserNotFoundException;
 import com.wayz.service.UserServiceClient;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -93,8 +91,8 @@ public class UserServiceClientImpl implements UserServiceClient {
             ResponseEntity<User> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, User.class);
             log.info("Запрос в user-service успешно отправлен. Тело ответа: {}", response.getBody());
             return handleResponse(response);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка при получении пользователя: " + e.getMessage(), e);
+        } catch (UserNotFoundException e) {
+            throw new UserNotFoundException(e.getStatusCode(), e.getMessage());
         }
     }
 
