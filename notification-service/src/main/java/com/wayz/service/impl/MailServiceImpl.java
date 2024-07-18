@@ -1,11 +1,9 @@
 package com.wayz.service.impl;
 
 import com.wayz.config.MailConfig;
-import com.wayz.config.impl.MailConfigImpl;
 import com.wayz.dto.Notification;
 import com.wayz.service.MailService;
 import com.wayz.view.EmailMessage;
-import com.wayz.view.impl.EmailMessageImpl;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +21,7 @@ public class MailServiceImpl implements MailService {
      */
     private final EmailMessage emailMessage;
 
-    public MailServiceImpl(MailConfigImpl mailConfig, EmailMessageImpl emailMessage) {
+    public MailServiceImpl(MailConfig mailConfig, EmailMessage emailMessage) {
         this.mailConfig = mailConfig;
         this.emailMessage = emailMessage;
     }

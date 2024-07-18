@@ -1,25 +1,27 @@
 package com.wayz.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wayz.dto.Notification;
-import com.wayz.dto.CreateOrderDto;
-import com.wayz.dto.UpdateOrderDto;
-import com.wayz.dto.User;
+import com.wayz.dto.*;
 import com.wayz.model.Order;
 import com.wayz.model.OrderStatus;
+import com.wayz.model.submodels.OrderItem;
 import com.wayz.repository.OrderRepository;
 import com.wayz.service.OrderService;
 import com.wayz.service.UserServiceClient;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Сервис с логикой управления заказами
@@ -155,7 +157,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order updateOrder(UpdateOrderDto orderDetails, String token) {
 
-        Order orderToUpdate = findOrderByIdFromDto(orderDetails);
+        Order orderToUpdate = findOrderByIdFromDto(orderDetails.getId());
         User user = userServiceClient.getUserByLogin(orderDetails.getLogin(), token);
 
         orderToUpdate.setStatus(OrderStatus.UPDATED);
@@ -171,11 +173,11 @@ public class OrderServiceImpl implements OrderService {
     /**
      * Поиск заказа по id
      *
-     * @param orderDetails данные из запроса
+     * @param id order ID
      * @return объект заказа если найдет
      */
-    public Order findOrderByIdFromDto(UpdateOrderDto orderDetails) {
-        return orderRepository.findById(orderDetails.getId())
+    public Order findOrderByIdFromDto(Long id) {
+        return orderRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order not found for given ID"));
     }
 
@@ -190,6 +192,68 @@ public class OrderServiceImpl implements OrderService {
     public Order getOrderById(Long id, String token) {
         Optional<Order> order = orderRepository.findById(id);
         return order.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+    }
+
+    /**
+     * Добавить новый товар в существующий заказ
+     *
+     * @param orderDetails данные из dto для добавления нового товара в заказ
+     * @return статус выполнения запроса
+     */
+    @Override
+    public ResponseEntity<String> addItemInOrder(AddItemInOrderDto orderDetails) {
+        try {
+            Order order = findOrderByIdFromDto(orderDetails.getOrderId());
+            order.addItem(orderDetails.getOrderItem());
+            orderRepository.save(order);
+            return ResponseEntity.ok("Order's item added: " + order);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+    }
+
+    /**
+     * Удаление конкретного товара по его имени в заказе
+     *
+     * @param orderId  идентификатор заказа
+     * @param itemName имя товара
+     * @return статус выполнения запроса
+     */
+    @Override
+    public ResponseEntity<String> deleteItemFromOrder(Long orderId, String itemName) {
+        try {
+            Order order = findOrderByIdFromDto(orderId);
+            Optional<OrderItem> orderItem = findItemByName(order, itemName);
+
+            if (orderItem.isPresent()) {
+                order.getItems().remove(orderItem.get());
+                orderRepository.save(order);
+                return ResponseEntity.ok("Order's item deleted: " + order);
+            }
+
+            // TODO перенести выше
+            if (order.getItems().isEmpty()) {
+                orderRepository.delete(order);
+                return ResponseEntity.ok("Заказ удален так как в нем закончились товары.");
+            }
+
+            return ResponseEntity.badRequest().body("Item not found. Name: " + itemName);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    /**
+     * Поиск товара по названию в заказе
+     *
+     * @param order    нужный заказ
+     * @param itemName название товара
+     * @return необходимый товар если есть
+     */
+    public Optional<OrderItem> findItemByName(Order order, String itemName) {
+        return order.getItems().stream()
+                .filter(item -> item.getName().equals(itemName)).findFirst();
     }
 
 }

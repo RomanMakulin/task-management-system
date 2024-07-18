@@ -1,7 +1,9 @@
 package com.wayz.config.impl;
 
 import com.wayz.config.MailConfig;
+import jakarta.annotation.PostConstruct;
 import jakarta.mail.internet.AddressException;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,7 +32,8 @@ public class MailConfigImpl implements MailConfig {
     /**
      * Конструктор сервиса
      */
-    public MailConfigImpl() {
+    @PostConstruct
+    public void init() {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");

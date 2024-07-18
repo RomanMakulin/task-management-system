@@ -1,5 +1,6 @@
 package com.wayz.controller;
 
+import com.wayz.dto.AddItemInOrderDto;
 import com.wayz.dto.CreateOrderDto;
 import com.wayz.dto.UpdateOrderDto;
 import com.wayz.model.Order;
@@ -20,8 +21,8 @@ public class Controller {
      */
     private final OrderService orderService;
 
-    public Controller(OrderService orderService, OrderService orderService1) {
-        this.orderService = orderService1;
+    public Controller(OrderService orderService) {
+        this.orderService = orderService;
     }
 
     /**
@@ -47,6 +48,17 @@ public class Controller {
     public ResponseEntity<Order> update(@RequestBody UpdateOrderDto order,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         return ResponseEntity.ok(orderService.updateOrder(order, token));
+    }
+
+    @PostMapping("/add-item")
+    public ResponseEntity<String> addItemInOrder(@RequestBody AddItemInOrderDto addItemInOrderDto){
+        return orderService.addItemInOrder(addItemInOrderDto);
+    }
+
+    @PostMapping("/delete-item")
+    public ResponseEntity<String> deleteItemInOrder(@RequestParam Long orderId,
+                                                    @RequestParam String itemName){
+        return orderService.deleteItemFromOrder(orderId, itemName);
     }
 
 }

@@ -41,4 +41,13 @@ public class Order {
     @JsonProperty
     private List<OrderItem> items;
 
+    /**
+     * Добавление товара в список товаров заказа
+     *
+     * @param item новый товар
+     */
+    public void addItem(OrderItem item) {
+        items.add(item);
+    }
+
 }
