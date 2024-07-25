@@ -1,7 +1,6 @@
 package com.wayz.repository;
 
 import com.wayz.model.Order;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,5 +22,30 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      */
     @Query("SELECT o FROM Order o WHERE o.orderDate BETWEEN :startDate AND :endDate")
     Optional<List<Order>> getOrderByDateRange(@Param("startDate") ZonedDateTime startDate, @Param("endDate") ZonedDateTime endDate);
+
+    /**
+     * Запрос в БД на получение всех заказов в отсортированном виде по дате (по новизне)
+     *
+     * @return отсортированный список заказов
+     */
+    @Query("SELECT o FROM Order o ORDER BY o.orderDate DESC ")
+    List<Order> getAllSortedByDate();
+
+    /**
+     * Запрос в БД на получение заказов со статусом "UPDATED"
+     *
+     * @return отфильтрованный список заказов
+     */
+    @Query("SELECT o from Order o WHERE o.status = com.wayz.model.OrderStatus.UPDATED")
+    List<Order> getUpdatedOrders();
+
+    /**
+     * Запрос в БД на получение заказов со статусом "CREATED"
+     *
+     * @return отфильтрованный список заказов
+     */
+    @Query("SELECT o from Order o WHERE o.status = com.wayz.model.OrderStatus.CREATED")
+    List<Order> getCreatedOrders();
+
 
 }

@@ -38,4 +38,35 @@ public class SortingServiceImpl implements SortingService {
         return ResponseEntity.ok(orderList);
     }
 
+    /**
+     * Получить все заказы в отсортированном виде по дате (по новизне)
+     *
+     * @return отсортированный список заказов
+     */
+    @Override
+    public ResponseEntity<List<Order>> getAllOrdersSortedByDate() {
+        return ResponseEntity.ok(orderRepository.getAllSortedByDate());
+    }
+
+    /**
+     * Запрос в БД на получение заказов со статусом "UPDATED"
+     *
+     * @return отфильтрованный список заказов
+     */
+    @Override
+    public ResponseEntity<List<Order>> getOrdersWithStatusUpdated() {
+        return ResponseEntity.ok(orderRepository.getUpdatedOrders());
+    }
+
+    /**
+     * Запрос в БД на получение заказов со статусом "CREATED"
+     *
+     * @return отфильтрованный список заказов
+     */
+    @Override
+    public ResponseEntity<List<Order>> getOrdersWithStatusCreated() {
+        return ResponseEntity.ok(orderRepository.getCreatedOrders());
+    }
+
+
 }

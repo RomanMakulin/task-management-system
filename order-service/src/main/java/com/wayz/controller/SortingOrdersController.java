@@ -42,4 +42,34 @@ public class SortingOrdersController {
         return sortingService.searchByDateRange(startDate, endDate);
     }
 
+    /**
+     * Запрос в БД на получение всех заказов в отсортированном виде по дате (по новизне)
+     *
+     * @return отсортированный список заказов
+     */
+    @GetMapping("/get-all-sorted-orders-by-date")
+    public ResponseEntity<List<Order>> getAllSortedOrdersByDate() {
+        return sortingService.getAllOrdersSortedByDate();
+    }
+
+    /**
+     * Запрос в БД на получение заказов со статусом "UPDATED"
+     *
+     * @return отфильтрованный список заказов
+     */
+    @GetMapping("/get-updated-orders")
+    public ResponseEntity<List<Order>> getUpdatedOrders(){
+        return sortingService.getOrdersWithStatusUpdated();
+    }
+
+    /**
+     * Запрос в БД на получение заказов со статусом "CREATED"
+     *
+     * @return отфильтрованный список заказов
+     */
+    @GetMapping("/get-created-orders")
+    public ResponseEntity<List<Order>> getCreatedOrders(){
+        return sortingService.getOrdersWithStatusCreated();
+    }
+
 }
