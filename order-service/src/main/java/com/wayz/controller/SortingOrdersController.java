@@ -3,6 +3,7 @@ package com.wayz.controller;
 import com.wayz.model.Order;
 import com.wayz.service.OrderService;
 import com.wayz.service.SortingService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +37,8 @@ public class SortingOrdersController {
      * @return список заказов если такие есть
      */
     @GetMapping("/get-orders-by-date-range")
-    public ResponseEntity<List<Order>> getOrdersByDate(@RequestParam ZonedDateTime startDate, @RequestParam ZonedDateTime endDate) {
+    public ResponseEntity<List<Order>> getOrdersByDate(@RequestParam("startDate") @DateTimeFormat(pattern = "dd.MM.yyyy, HH:mm") ZonedDateTime startDate,
+                                                       @RequestParam("endDate") @DateTimeFormat(pattern = "dd.MM.yyyy, HH:mm") ZonedDateTime endDate) {
         return sortingService.searchByDateRange(startDate, endDate);
     }
 
