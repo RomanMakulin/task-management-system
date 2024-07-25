@@ -24,6 +24,15 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Optional<List<Order>> getOrderByDateRange(@Param("startDate") ZonedDateTime startDate, @Param("endDate") ZonedDateTime endDate);
 
     /**
+     * Запрос в БД на получение списка заков по конкретной дате
+     *
+     * @param needDate дата заказов
+     * @return список заказа
+     */
+    @Query("SELECT o FROM Order o WHERE o.orderDate = :needDate")
+    Optional<List<Order>> getOrderByDate(@Param("needDate") ZonedDateTime needDate);
+
+    /**
      * Запрос в БД на получение всех заказов в отсортированном виде по дате (по новизне)
      *
      * @return отсортированный список заказов

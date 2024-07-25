@@ -39,6 +39,19 @@ public class SortingServiceImpl implements SortingService {
     }
 
     /**
+     * Получить список заказов по указанной дате
+     *
+     * @param needDate нужная дата
+     * @return список заказов если есть
+     */
+    @Override
+    public ResponseEntity<List<Order>> searchByDate(ZonedDateTime needDate) {
+        List<Order> orderList = orderRepository.getOrderByDate(needDate)
+                .orElseThrow(() -> new NullPointerException("Нет заказов по выбранной дате."));
+        return ResponseEntity.ok(orderList);
+    }
+
+    /**
      * Получить все заказы в отсортированном виде по дате (по новизне)
      *
      * @return отсортированный список заказов

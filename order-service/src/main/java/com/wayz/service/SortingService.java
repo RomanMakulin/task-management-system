@@ -11,6 +11,8 @@ public interface SortingService {
 
     ResponseEntity<List<Order>> searchByDateRange(ZonedDateTime startDate, ZonedDateTime endDate);
 
+    ResponseEntity<List<Order>> searchByDate(ZonedDateTime needDate);
+
     ResponseEntity<List<Order>> getAllOrdersSortedByDate();
 
     ResponseEntity<List<Order>> getOrdersWithStatusUpdated();

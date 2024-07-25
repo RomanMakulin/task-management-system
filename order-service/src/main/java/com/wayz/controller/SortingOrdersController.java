@@ -1,7 +1,6 @@
 package com.wayz.controller;
 
 import com.wayz.model.Order;
-import com.wayz.service.OrderService;
 import com.wayz.service.SortingService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +36,20 @@ public class SortingOrdersController {
      * @return список заказов если такие есть
      */
     @GetMapping("/get-orders-by-date-range")
-    public ResponseEntity<List<Order>> getOrdersByDate(@RequestParam("startDate") @DateTimeFormat(pattern = "dd.MM.yyyy, HH:mm") ZonedDateTime startDate,
-                                                       @RequestParam("endDate") @DateTimeFormat(pattern = "dd.MM.yyyy, HH:mm") ZonedDateTime endDate) {
+    public ResponseEntity<List<Order>> getOrdersByDateRange(@RequestParam("startDate") @DateTimeFormat(pattern = "dd.MM.yyyy, HH:mm") ZonedDateTime startDate,
+                                                            @RequestParam("endDate") @DateTimeFormat(pattern = "dd.MM.yyyy, HH:mm") ZonedDateTime endDate) {
         return sortingService.searchByDateRange(startDate, endDate);
+    }
+
+    /**
+     * Получить список заказов по указанной дате
+     *
+     * @param date нужная дата
+     * @return список заказов если есть
+     */
+    @GetMapping("/get-orders-by-date")
+    public ResponseEntity<List<Order>> getOrdersByDate(@RequestParam("date") @DateTimeFormat(pattern = "dd.MM.yyyy, HH:mm") ZonedDateTime date) {
+        return sortingService.searchByDate(date);
     }
 
     /**
@@ -58,7 +68,7 @@ public class SortingOrdersController {
      * @return отфильтрованный список заказов
      */
     @GetMapping("/get-updated-orders")
-    public ResponseEntity<List<Order>> getUpdatedOrders(){
+    public ResponseEntity<List<Order>> getUpdatedOrders() {
         return sortingService.getOrdersWithStatusUpdated();
     }
 
@@ -68,7 +78,7 @@ public class SortingOrdersController {
      * @return отфильтрованный список заказов
      */
     @GetMapping("/get-created-orders")
-    public ResponseEntity<List<Order>> getCreatedOrders(){
+    public ResponseEntity<List<Order>> getCreatedOrders() {
         return sortingService.getOrdersWithStatusCreated();
     }
 
