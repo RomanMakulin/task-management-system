@@ -1,6 +1,5 @@
 package com.wayz.controller;
 
-import com.wayz.dto.AddItemInOrderDto;
 import com.wayz.dto.CreateOrderDto;
 import com.wayz.dto.UpdateOrderDto;
 import com.wayz.model.Order;
@@ -54,16 +53,16 @@ public class OrderController {
      * Изменить владельца заказа
      *
      * @param orderId  идентификатор заказа
-     * @param username логин нового владельца
+     * @param needUserName логин нового владельца
      * @param token    токен авторизации запроса
      * @return статус выполнения - обновленный order
      */
     @PostMapping("/change-order-owner")
     public ResponseEntity<Order> changeOrderOwner(@RequestParam Long orderId,
-                                                  @RequestParam String username,
+                                                  @RequestParam String needUserName,
                                                   @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 
-        return orderService.changeOwner(orderId, username, token);
+        return orderService.changeOwner(orderId, needUserName, token);
     }
 
     /**
@@ -73,8 +72,8 @@ public class OrderController {
      * @param token    токен авторизации запроса
      * @return статус выполнения - лист заказов
      */
-    @GetMapping("/get-all-user-orders")
-    public ResponseEntity<List<Order>> getAllUserOrders(@RequestParam String username, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+    @GetMapping("/get-all-user-orders/{username}")
+    public ResponseEntity<List<Order>> getAllUserOrders(@PathVariable("username") String username, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         return orderService.getUserOrders(username, token);
     }
 
