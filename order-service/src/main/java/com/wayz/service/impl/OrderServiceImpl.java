@@ -69,6 +69,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+     * Установить заказу статус "Удален"
+     * При этом нет удаления заказа из базы данных
+     *
+     * @param orderId идентификатор заказа
+     * @return обновленный заказ
+     */
+    @Override
+    public ResponseEntity<Order> deleteOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NullPointerException("Объект заказа не найден. ID: " + orderId));
+        order.setStatus(OrderStatus.DELETED);
+        orderRepository.save(order);
+        return ResponseEntity.ok(order);
+    }
+
+    /**
      * Обновление заказа
      *
      * @param orderDetails данные для обновления заказа

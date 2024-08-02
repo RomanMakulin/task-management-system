@@ -16,6 +16,8 @@ public interface OrderService {
 
     ResponseEntity<Order> createOrder(CreateOrderDto createOrderDto, String token);
 
+    ResponseEntity<Order> deleteOrder(Long orderId);
+
     ResponseEntity<Order> updateOrder(UpdateOrderDto orderDetails, String token);
 
     Order findOrderByIdFromDto(Long id);

@@ -52,9 +52,9 @@ public class OrderController {
     /**
      * Изменить владельца заказа
      *
-     * @param orderId  идентификатор заказа
+     * @param orderId      идентификатор заказа
      * @param needUserName логин нового владельца
-     * @param token    токен авторизации запроса
+     * @param token        токен авторизации запроса
      * @return статус выполнения - обновленный order
      */
     @PostMapping("/change-order-owner")
@@ -75,6 +75,18 @@ public class OrderController {
     @GetMapping("/get-all-user-orders/{username}")
     public ResponseEntity<List<Order>> getAllUserOrders(@PathVariable("username") String username, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         return orderService.getUserOrders(username, token);
+    }
+
+    /**
+     * Установить заказу статус "Удален"
+     * При этом нет удаления заказа из базы данных
+     *
+     * @param orderId идентификатор заказа
+     * @return обновленный заказ
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Order> deleteOrder(@PathVariable("id") Long orderId) {
+        return orderService.deleteOrder(orderId);
     }
 
 }
