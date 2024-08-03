@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: update_order_history_table
+      author: Roman Makulin
+      changes:
+        - dropColumn:
+            columnName: order_status
+            tableName: order_history
+        - addColumn:
+            tableName: order_history
+            columns:
+              - column:
+                  name: old_status
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: new_status
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: order_history
+            indexName: idx_old_status
+            columns:
+              - column:
+                  name: old_status
+        - createIndex:
+            tableName: order_history
+            indexName: idx_new_status
+            columns:
+              - column:
+                  name: new_status

@@ -3,6 +3,7 @@ package com.wayz.service.impl;
 import com.wayz.dto.CreateOrderDto;
 import com.wayz.dto.User;
 import com.wayz.model.Order;
+import com.wayz.model.OrderHistory;
 import com.wayz.model.submodels.OrderStatus;
 import com.wayz.repository.OrderRepository;
 import com.wayz.service.CreateOrderService;
@@ -56,6 +57,8 @@ public class CreateOrderServiceImpl implements CreateOrderService {
 
         User user = userServiceClient.getUserByLogin(createOrderDto.getLogin(), token);
         Order newOrder = buildOrder(createOrderDto, user);
+
+        new OrderHistory(newOrder, null); // TODO проверить
 
         orderRepository.save(newOrder);
         notificationService.orderNotifyKafka(newOrder, user);

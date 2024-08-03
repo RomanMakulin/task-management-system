@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -42,6 +43,10 @@ public class Order {
     @JsonProperty
     private List<OrderItem> items;
 
+    @JsonProperty
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderHistory> orderHistoryList;
+
     /**
      * Добавление товара в список товаров заказа
      *
@@ -49,6 +54,11 @@ public class Order {
      */
     public void addItem(OrderItem item) {
         items.add(item);
+    }
+
+    public void addHistory(OrderHistory order) {
+        if (orderHistoryList.isEmpty()) orderHistoryList = new ArrayList<>();
+        this.orderHistoryList.add(order);
     }
 
 }

@@ -32,7 +32,28 @@ public class OrderHistory {
 
     @Enumerated(EnumType.STRING)
     @JsonProperty
-    @Column(name = "order_status")
-    private OrderStatus orderStatus;
+    @Column(name = "old_status")
+    private OrderStatus oldStatus;
 
+    @Enumerated(EnumType.STRING)
+    @JsonProperty
+    @Column(name = "new_status")
+    private OrderStatus newStatus;
+
+    public OrderHistory(Order order, OrderStatus newStatus) {
+        this.order = order;
+        this.changedData = order.toString();
+        this.dateTime = LocalDateTime.now();
+        this.oldStatus = order.getStatus();
+
+        if (newStatus == null) {
+            this.newStatus = order.getStatus();
+        } else this.newStatus = newStatus;
+
+        order.addHistory(this);
+    }
+
+    public OrderHistory() {
+
+    }
 }
