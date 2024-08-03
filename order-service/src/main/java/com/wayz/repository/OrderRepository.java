@@ -45,7 +45,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      *
      * @return отфильтрованный список заказов
      */
-    @Query("SELECT o from Order o WHERE o.status = com.wayz.model.OrderStatus.UPDATED")
+    @Query("SELECT o from Order o WHERE o.status = com.wayz.model.submodels.OrderStatus.UPDATED")
     List<Order> getUpdatedOrders();
 
     /**
@@ -53,7 +53,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      *
      * @return отфильтрованный список заказов
      */
-    @Query("SELECT o from Order o WHERE o.status = com.wayz.model.OrderStatus.CREATED")
+    @Query("SELECT o from Order o WHERE o.status = com.wayz.model.submodels.OrderStatus.CREATED")
     List<Order> getCreatedOrders();
 
 
