@@ -1,24 +1,18 @@
 package com.wayz.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wayz.dto.*;
 import com.wayz.model.Order;
-import com.wayz.model.OrderStatus;
-import com.wayz.model.submodels.OrderItem;
+import com.wayz.model.submodels.OrderStatus;
 import com.wayz.repository.OrderRepository;
 import com.wayz.service.CreateOrderService;
 import com.wayz.service.NotificationService;
 import com.wayz.service.OrderService;
 import com.wayz.service.UserServiceClient;
-import lombok.Data;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 

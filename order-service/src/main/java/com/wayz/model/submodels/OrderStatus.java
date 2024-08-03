@@ -1,4 +1,4 @@
-package com.wayz.model;
+package com.wayz.model.submodels;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

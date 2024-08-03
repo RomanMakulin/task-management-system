@@ -3,7 +3,7 @@ package com.wayz.service.impl;
 import com.wayz.dto.CreateOrderDto;
 import com.wayz.dto.User;
 import com.wayz.model.Order;
-import com.wayz.model.OrderStatus;
+import com.wayz.model.submodels.OrderStatus;
 import com.wayz.repository.OrderRepository;
 import com.wayz.service.CreateOrderService;
 import com.wayz.service.NotificationService;

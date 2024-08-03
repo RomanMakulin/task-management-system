@@ -1,0 +1,55 @@
+databaseChangeLog:
+  - changeSet:
+      id: create order history table
+      author: Roman Makulin
+      changes:
+        - createTable:
+            tableName: order_history
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: changed_data
+                  type: VARCHAR(255)
+              - column:
+                  name: change_date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: order_status
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: order_history
+            baseColumnNames: order_id
+            referencedTableName: order
+            referencedColumnNames: id
+            constraintName: fk_order_history_order
+        - addUniqueConstraint:
+            tableName: order_history
+            columnNames: ID
+            constraintName: pk_order_history
+        - createIndex:
+            tableName: order_history
+            indexName: idx_order_status
+            columns:
+              - column:
+                  name: order_status
+        - createIndex:
+            tableName: order_history
+            indexName: idx_change_date
+            columns:
+              - column:
+                  name: change_date

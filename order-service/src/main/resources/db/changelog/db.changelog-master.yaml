@@ -6,3 +6,7 @@ databaseChangeLog:
   - include:
       file: changeset/create-order-items-table.yaml
       relativeToChangelogFile: true
+
+  - include:
+      file: changeset/create-order-history-table.yaml
+      relativeToChangelogFile: true
