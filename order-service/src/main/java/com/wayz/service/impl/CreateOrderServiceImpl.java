@@ -8,6 +8,7 @@ import com.wayz.model.submodels.OrderStatus;
 import com.wayz.repository.OrderRepository;
 import com.wayz.service.CreateOrderService;
 import com.wayz.service.NotificationService;
+import com.wayz.service.OrderHistoryService;
 import com.wayz.service.UserServiceClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -35,13 +36,16 @@ public class CreateOrderServiceImpl implements CreateOrderService {
      */
     private final NotificationService notificationService;
 
+    private final OrderHistoryService orderHistoryService;
+
     /**
      * Конструктор класса
      */
-    public CreateOrderServiceImpl(OrderRepository orderRepository, UserServiceClient userServiceClient, NotificationService notificationService) {
+    public CreateOrderServiceImpl(OrderRepository orderRepository, UserServiceClient userServiceClient, NotificationService notificationService, OrderHistoryService orderHistoryService) {
         this.orderRepository = orderRepository;
         this.userServiceClient = userServiceClient;
         this.notificationService = notificationService;
+        this.orderHistoryService = orderHistoryService;
     }
 
     /**
@@ -58,9 +62,7 @@ public class CreateOrderServiceImpl implements CreateOrderService {
         User user = userServiceClient.getUserByLogin(createOrderDto.getLogin(), token);
         Order newOrder = buildOrder(createOrderDto, user);
 
-        new OrderHistory(newOrder, null); // TODO проверить
-
-        orderRepository.save(newOrder);
+        orderHistoryService.updateOrderHistory(newOrder, null);
         notificationService.orderNotifyKafka(newOrder, user);
 
         return ResponseEntity.ok(newOrder);

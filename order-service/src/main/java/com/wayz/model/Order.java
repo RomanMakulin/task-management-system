@@ -45,7 +45,7 @@ public class Order {
 
     @JsonProperty
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderHistory> orderHistoryList;
+    private List<OrderHistory> orderHistoryList = new ArrayList<>();
 
     /**
      * Добавление товара в список товаров заказа
@@ -57,8 +57,18 @@ public class Order {
     }
 
     public void addHistory(OrderHistory order) {
-        if (orderHistoryList.isEmpty()) orderHistoryList = new ArrayList<>();
         this.orderHistoryList.add(order);
     }
 
+    @Override
+    public String toString() {
+        return "Order{" +
+                "ID=" + ID +
+                ", userId=" + userId +
+                ", orderDate=" + orderDate +
+                ", status=" + status +
+                ", orderAddress=" + orderAddress +
+                ", items=" + items +
+                '}';
+    }
 }

@@ -4,10 +4,7 @@ import com.wayz.dto.*;
 import com.wayz.model.Order;
 import com.wayz.model.submodels.OrderStatus;
 import com.wayz.repository.OrderRepository;
-import com.wayz.service.CreateOrderService;
-import com.wayz.service.NotificationService;
-import com.wayz.service.OrderService;
-import com.wayz.service.UserServiceClient;
+import com.wayz.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,15 +34,18 @@ public class OrderServiceImpl implements OrderService {
      */
     private final NotificationService notificationService;
 
+    private final OrderHistoryService orderHistoryService;
+
     /**
      * Сервис создания заказов
      */
     private final CreateOrderService createOrderService;
 
-    public OrderServiceImpl(OrderRepository orderRepository, UserServiceClient userServiceClient, NotificationService notificationService, CreateOrderService createOrderService) {
+    public OrderServiceImpl(OrderRepository orderRepository, UserServiceClient userServiceClient, NotificationService notificationService, OrderHistoryService orderHistoryService, CreateOrderService createOrderService) {
         this.orderRepository = orderRepository;
         this.userServiceClient = userServiceClient;
         this.notificationService = notificationService;
+        this.orderHistoryService = orderHistoryService;
         this.createOrderService = createOrderService;
     }
 
@@ -88,6 +88,9 @@ public class OrderServiceImpl implements OrderService {
     public ResponseEntity<Order> updateOrder(UpdateOrderDto orderDetails, String token) {
         Order orderToUpdate = findOrderByIdFromDto(orderDetails.getId());
         User user = userServiceClient.getUserByLogin(orderDetails.getLogin(), token);
+
+        // TODO продумать как улучшить читаемость и логику последоватности
+        orderHistoryService.updateOrderHistory(orderToUpdate, OrderStatus.UPDATED);
 
         orderToUpdate.setStatus(OrderStatus.UPDATED);
         Optional.ofNullable(orderDetails.getOrderAddress()).ifPresent(orderToUpdate::setOrderAddress);
