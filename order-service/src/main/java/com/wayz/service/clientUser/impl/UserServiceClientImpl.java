@@ -1,8 +1,8 @@
-package com.wayz.service.impl;
+package com.wayz.service.clientUser.impl;
 
 import com.wayz.dto.User;
 import com.wayz.exceptions.UserNotFoundException;
-import com.wayz.service.UserServiceClient;
+import com.wayz.service.clientUser.UserServiceClient;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

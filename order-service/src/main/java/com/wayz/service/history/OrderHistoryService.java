@@ -1,4 +1,4 @@
-package com.wayz.service;
+package com.wayz.service.history;
 
 import com.wayz.model.Order;
 import com.wayz.model.submodels.OrderStatus;

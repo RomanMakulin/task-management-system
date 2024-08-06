@@ -1,4 +1,4 @@
-package com.wayz.service;
+package com.wayz.service.notify;
 
 import com.wayz.dto.User;
 import com.wayz.model.Order;

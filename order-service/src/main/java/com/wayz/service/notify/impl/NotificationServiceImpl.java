@@ -1,10 +1,10 @@
-package com.wayz.service.impl;
+package com.wayz.service.notify.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wayz.dto.Notification;
 import com.wayz.dto.User;
 import com.wayz.model.Order;
-import com.wayz.service.NotificationService;
+import com.wayz.service.notify.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;

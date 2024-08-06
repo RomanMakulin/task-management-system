@@ -22,6 +22,8 @@ public interface OrderService {
 
     Order findOrderByIdFromDto(Long id);
 
+    Order findOrderById(Long id);
+
     ResponseEntity<Order> changeOwner(Long orderId, String username, String token);
 
     ResponseEntity<List<Order>> getUserOrders(String username, String token);

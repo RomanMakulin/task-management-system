@@ -1,15 +1,14 @@
-package com.wayz.service.impl;
+package com.wayz.service.actionsWithOrder.impl;
 
 import com.wayz.dto.CreateOrderDto;
 import com.wayz.dto.User;
 import com.wayz.model.Order;
-import com.wayz.model.OrderHistory;
 import com.wayz.model.submodels.OrderStatus;
 import com.wayz.repository.OrderRepository;
-import com.wayz.service.CreateOrderService;
-import com.wayz.service.NotificationService;
-import com.wayz.service.OrderHistoryService;
-import com.wayz.service.UserServiceClient;
+import com.wayz.service.notify.NotificationService;
+import com.wayz.service.history.OrderHistoryService;
+import com.wayz.service.clientUser.UserServiceClient;
+import com.wayz.service.actionsWithOrder.CreateOrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 

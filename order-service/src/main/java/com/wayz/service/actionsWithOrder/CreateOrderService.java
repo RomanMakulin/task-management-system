@@ -1,4 +1,4 @@
-package com.wayz.service;
+package com.wayz.service.actionsWithOrder;
 
 import com.wayz.dto.CreateOrderDto;
 import com.wayz.model.Order;

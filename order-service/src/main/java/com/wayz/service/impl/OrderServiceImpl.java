@@ -5,13 +5,16 @@ import com.wayz.model.Order;
 import com.wayz.model.submodels.OrderStatus;
 import com.wayz.repository.OrderRepository;
 import com.wayz.service.*;
+import com.wayz.service.actionsWithOrder.CreateOrderService;
+import com.wayz.service.actionsWithOrder.DeleteOrderService;
+import com.wayz.service.actionsWithOrder.UpdateOrderService;
+import com.wayz.service.clientUser.UserServiceClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Сервис с логикой управления заказами
@@ -29,23 +32,24 @@ public class OrderServiceImpl implements OrderService {
      */
     private final UserServiceClient userServiceClient;
 
-    /**
-     * Сервис отправки нотификаций через Kafka
-     */
-    private final NotificationService notificationService;
 
-    private final OrderHistoryService orderHistoryService;
+    private final UpdateOrderService updateOrderService;
+
+    private final DeleteOrderService deleteOrderService;
 
     /**
      * Сервис создания заказов
      */
     private final CreateOrderService createOrderService;
 
-    public OrderServiceImpl(OrderRepository orderRepository, UserServiceClient userServiceClient, NotificationService notificationService, OrderHistoryService orderHistoryService, CreateOrderService createOrderService) {
+    public OrderServiceImpl(OrderRepository orderRepository,
+                            UserServiceClient userServiceClient,
+                            UpdateOrderService updateOrderService, DeleteOrderService deleteOrderService,
+                            CreateOrderService createOrderService) {
         this.orderRepository = orderRepository;
         this.userServiceClient = userServiceClient;
-        this.notificationService = notificationService;
-        this.orderHistoryService = orderHistoryService;
+        this.updateOrderService = updateOrderService;
+        this.deleteOrderService = deleteOrderService;
         this.createOrderService = createOrderService;
     }
 
@@ -71,11 +75,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public ResponseEntity<Order> deleteOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new NullPointerException("Объект заказа не найден. ID: " + orderId));
-        order.setStatus(OrderStatus.DELETED);
-        orderRepository.save(order);
-        return ResponseEntity.ok(order);
+        return deleteOrderService.deleteOrder(orderId);
     }
 
     /**
@@ -86,19 +86,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public ResponseEntity<Order> updateOrder(UpdateOrderDto orderDetails, String token) {
-        Order orderToUpdate = findOrderByIdFromDto(orderDetails.getId());
-        User user = userServiceClient.getUserByLogin(orderDetails.getLogin(), token);
-
-        // TODO продумать как улучшить читаемость и логику последоватности
-        orderHistoryService.updateOrderHistory(orderToUpdate, OrderStatus.UPDATED);
-
-        orderToUpdate.setStatus(OrderStatus.UPDATED);
-        Optional.ofNullable(orderDetails.getOrderAddress()).ifPresent(orderToUpdate::setOrderAddress);
-        Optional.ofNullable(orderDetails.getItems()).ifPresent(orderToUpdate::setItems);
-
-        notificationService.orderNotifyKafka(orderToUpdate, user);
-        orderRepository.save(orderToUpdate);
-        return ResponseEntity.ok(orderToUpdate);
+        return updateOrderService.updateOrder(orderDetails, token);
     }
 
     /**
@@ -111,6 +99,12 @@ public class OrderServiceImpl implements OrderService {
     public Order findOrderByIdFromDto(Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order not found for given ID"));
+    }
+
+    @Override
+    public Order findOrderById(Long id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new NullPointerException("Объект заказа не найден. ID: " + id));
     }
 
     /**
