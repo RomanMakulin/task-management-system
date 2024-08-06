@@ -1,10 +1,9 @@
-package com.wayz.service.impl;
+package com.wayz.service.orderItems;
 
 import com.wayz.dto.AddItemInOrderDto;
 import com.wayz.model.Order;
 import com.wayz.model.submodels.OrderItem;
 import com.wayz.repository.OrderRepository;
-import com.wayz.service.OrderItemService;
 import com.wayz.service.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,8 @@ public class OrderItemServiceImpl implements OrderItemService {
      */
     private final OrderRepository orderRepository;
 
-    public OrderItemServiceImpl(OrderService orderService, OrderRepository orderRepository) {
+    public OrderItemServiceImpl(OrderService orderService,
+                                OrderRepository orderRepository) {
         this.orderService = orderService;
         this.orderRepository = orderRepository;
     }
@@ -81,17 +81,17 @@ public class OrderItemServiceImpl implements OrderItemService {
      *
      * @param order     текущий заказ
      * @param orderItem товар в заказе для удаления
-     * @return статус выполнения логики
      */
-    public ResponseEntity<String> checkItemListAndDelete(Order order, OrderItem orderItem) {
+    public void checkItemListAndDelete(Order order, OrderItem orderItem) {
         order.getItems().remove(orderItem);
         orderRepository.save(order);
 
         if (order.getItems().isEmpty()) {
             orderRepository.delete(order); // удаляем заказ если список товаров в нем пустой
-            return ResponseEntity.ok("Товар удален: " + orderItem + "\n" + "Заказ удален так как в нем закончились товары.");
+            ResponseEntity.ok("Товар удален: " + orderItem + "\n" + "Заказ удален так как в нем закончились товары.");
+            return;
         }
-        return ResponseEntity.ok("Товар удален: " + orderItem);
+        ResponseEntity.ok("Товар удален: " + orderItem);
     }
 
     /**

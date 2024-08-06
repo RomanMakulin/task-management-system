@@ -1,7 +1,7 @@
 package com.wayz.controller;
 
 import com.wayz.model.Order;
-import com.wayz.service.SortingService;
+import com.wayz.service.sorting.SortingService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

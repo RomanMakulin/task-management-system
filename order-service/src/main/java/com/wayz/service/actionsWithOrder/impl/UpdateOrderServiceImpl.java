@@ -16,21 +16,13 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class UpdateOrderServiceImpl implements UpdateOrderService {
+public class UpdateOrderServiceImpl extends AbstractOrderService implements UpdateOrderService {
 
-    private final OrderService orderService;
-    private final UserServiceClient userServiceClient;
-    private final OrderHistoryService orderHistoryService;
-    private final NotificationService notificationService;
-
-    public UpdateOrderServiceImpl(@Lazy OrderService orderService,
-                                  UserServiceClient userServiceClient,
-                                  OrderHistoryService orderHistoryService,
-                                  NotificationService notificationService) {
-        this.orderService = orderService;
-        this.userServiceClient = userServiceClient;
-        this.orderHistoryService = orderHistoryService;
-        this.notificationService = notificationService;
+    protected UpdateOrderServiceImpl(UserServiceClient userServiceClient,
+                                     NotificationService notificationService,
+                                     OrderHistoryService orderHistoryService,
+                                     @Lazy OrderService orderService) {
+        super(null, userServiceClient, notificationService, orderHistoryService, orderService);
     }
 
     /**

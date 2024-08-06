@@ -2,7 +2,7 @@ package com.wayz.controller;
 
 import com.wayz.dto.AddItemInOrderDto;
 import com.wayz.model.Order;
-import com.wayz.service.OrderItemService;
+import com.wayz.service.orderItems.OrderItemService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

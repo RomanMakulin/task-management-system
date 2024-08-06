@@ -5,10 +5,13 @@ import com.wayz.dto.User;
 import com.wayz.model.Order;
 import com.wayz.model.submodels.OrderStatus;
 import com.wayz.repository.OrderRepository;
+import com.wayz.service.AbstractOrderService;
+import com.wayz.service.OrderService;
 import com.wayz.service.notify.NotificationService;
 import com.wayz.service.history.OrderHistoryService;
 import com.wayz.service.clientUser.UserServiceClient;
 import com.wayz.service.actionsWithOrder.CreateOrderService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -18,40 +21,20 @@ import java.time.ZonedDateTime;
  * Сервис создания заказов
  */
 @Service
-public class CreateOrderServiceImpl implements CreateOrderService {
+public class CreateOrderServiceImpl extends AbstractOrderService implements CreateOrderService {
 
-    /**
-     * Репозиторий заказов
-     */
-    private final OrderRepository orderRepository;
-
-    /**
-     * Сервис клиента работы с User-service (интеграция)
-     */
-    private final UserServiceClient userServiceClient;
-
-    /**
-     * Сервис отправки нотификаций через Kafka
-     */
-    private final NotificationService notificationService;
-
-    private final OrderHistoryService orderHistoryService;
-
-    /**
-     * Конструктор класса
-     */
-    public CreateOrderServiceImpl(OrderRepository orderRepository, UserServiceClient userServiceClient, NotificationService notificationService, OrderHistoryService orderHistoryService) {
-        this.orderRepository = orderRepository;
-        this.userServiceClient = userServiceClient;
-        this.notificationService = notificationService;
-        this.orderHistoryService = orderHistoryService;
+    protected CreateOrderServiceImpl(UserServiceClient userServiceClient,
+                                     NotificationService notificationService,
+                                     OrderHistoryService orderHistoryService,
+                                     @Lazy OrderService orderService) {
+        super(null, userServiceClient, notificationService, orderHistoryService, orderService);
     }
 
     /**
      * Создание заказа с проверкой существует ли такой пользователь в системе
      *
      * @param createOrderDto данные заказа
-     * @param token токен авторизации
+     * @param token          токен авторизации
      * @return созданный заказ
      */
     @Override

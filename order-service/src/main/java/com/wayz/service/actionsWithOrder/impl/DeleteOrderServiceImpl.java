@@ -3,26 +3,24 @@ package com.wayz.service.actionsWithOrder.impl;
 import com.wayz.model.Order;
 import com.wayz.model.submodels.OrderStatus;
 import com.wayz.repository.OrderRepository;
+import com.wayz.service.AbstractOrderService;
 import com.wayz.service.OrderService;
 import com.wayz.service.actionsWithOrder.DeleteOrderService;
+import com.wayz.service.clientUser.UserServiceClient;
 import com.wayz.service.history.OrderHistoryService;
+import com.wayz.service.notify.NotificationService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DeleteOrderServiceImpl implements DeleteOrderService {
+public class DeleteOrderServiceImpl extends AbstractOrderService implements DeleteOrderService {
 
-    private final OrderRepository orderRepository;
-    private final OrderHistoryService orderHistoryService;
-    private final OrderService orderService;
-
-    public DeleteOrderServiceImpl(OrderRepository orderRepository,
-                                  OrderHistoryService orderHistoryService,
-                                  @Lazy OrderService orderService) {
-        this.orderRepository = orderRepository;
-        this.orderHistoryService = orderHistoryService;
-        this.orderService = orderService;
+    protected DeleteOrderServiceImpl(UserServiceClient userServiceClient,
+                                     NotificationService notificationService,
+                                     OrderHistoryService orderHistoryService,
+                                     @Lazy OrderService orderService) {
+        super(null, userServiceClient, notificationService, orderHistoryService, orderService);
     }
 
     /**

@@ -1,8 +1,7 @@
-package com.wayz.service.impl;
+package com.wayz.service.sorting;
 
 import com.wayz.model.Order;
 import com.wayz.repository.OrderRepository;
-import com.wayz.service.SortingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 

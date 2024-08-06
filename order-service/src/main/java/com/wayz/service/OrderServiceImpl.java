@@ -1,14 +1,14 @@
-package com.wayz.service.impl;
+package com.wayz.service;
 
 import com.wayz.dto.*;
 import com.wayz.model.Order;
-import com.wayz.model.submodels.OrderStatus;
 import com.wayz.repository.OrderRepository;
-import com.wayz.service.*;
 import com.wayz.service.actionsWithOrder.CreateOrderService;
 import com.wayz.service.actionsWithOrder.DeleteOrderService;
 import com.wayz.service.actionsWithOrder.UpdateOrderService;
 import com.wayz.service.clientUser.UserServiceClient;
+import com.wayz.service.history.OrderHistoryService;
+import com.wayz.service.notify.NotificationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,39 +20,24 @@ import java.util.List;
  * Сервис с логикой управления заказами
  */
 @Service
-public class OrderServiceImpl implements OrderService {
-
-    /**
-     * Репозиторий заказов
-     */
-    private final OrderRepository orderRepository;
-
-    /**
-     * Сервис клиента работы с User-service (интеграция)
-     */
-    private final UserServiceClient userServiceClient;
-
+public class OrderServiceImpl extends AbstractOrderService implements OrderService {
 
     private final UpdateOrderService updateOrderService;
-
     private final DeleteOrderService deleteOrderService;
-
-    /**
-     * Сервис создания заказов
-     */
     private final CreateOrderService createOrderService;
 
-    public OrderServiceImpl(OrderRepository orderRepository,
-                            UserServiceClient userServiceClient,
-                            UpdateOrderService updateOrderService, DeleteOrderService deleteOrderService,
-                            CreateOrderService createOrderService) {
-        this.orderRepository = orderRepository;
-        this.userServiceClient = userServiceClient;
+    protected OrderServiceImpl(OrderRepository orderRepository,
+                               UserServiceClient userServiceClient,
+                               NotificationService notificationService,
+                               OrderHistoryService orderHistoryService,
+                               UpdateOrderService updateOrderService,
+                               DeleteOrderService deleteOrderService,
+                               CreateOrderService createOrderService) {
+        super(orderRepository, userServiceClient, notificationService, orderHistoryService, null);
         this.updateOrderService = updateOrderService;
         this.deleteOrderService = deleteOrderService;
         this.createOrderService = createOrderService;
     }
-
 
     /**
      * Создание заказа с проверкой существует ли такой пользователь в системе

@@ -1,7 +1,6 @@
-package com.wayz.service;
+package com.wayz.service.sorting;
 
 import com.wayz.model.Order;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 
 import java.time.ZonedDateTime;
