@@ -8,4 +8,5 @@ public interface AuthService {
     User registerUser(User user);
     void validateToken(String token);
     ResponseEntity<String> loginUser(AuthRequest authRequest);
+    User getCurrentUser();
 }

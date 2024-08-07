@@ -1,5 +1,6 @@
 package com.security.security_service.service;
 
+import com.security.security_service.config.CustomUserDetails;
 import com.security.security_service.dto.AuthRequest;
 import com.security.security_service.model.User;
 import com.security.security_service.repository.UserRepository;
@@ -10,6 +11,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -95,4 +98,21 @@ public class AuthServiceImpl implements AuthService {
     public void validateToken(String token) {
         jwtService.validateToken(token);
     }
+
+    /**
+     * Получить текущего авторизованного пользователя
+     *
+     * @return объект пользователя
+     */
+    @Override
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
+            return userRepository.findByLogin(userDetails.getUsername())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userDetails.getUsername()));
+        } else {
+            throw new UsernameNotFoundException("User not found");
+        }
+    }
+
 }
