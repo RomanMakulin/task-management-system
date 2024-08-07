@@ -7,6 +7,8 @@ public interface UserInfoService {
 
     User getUserByLogin(String login);
 
+    User getCurrentUser(String token);
+
     boolean existsByLogin(String login);
 
     boolean existsByEmail(String email);

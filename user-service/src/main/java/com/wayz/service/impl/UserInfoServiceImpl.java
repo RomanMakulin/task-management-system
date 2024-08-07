@@ -3,6 +3,7 @@ package com.wayz.service.impl;
 import com.wayz.model.User;
 import com.wayz.repository.UserRepository;
 import com.wayz.service.UserInfoService;
+import com.wayz.service.integration.SecurityAuthClient;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,9 +13,12 @@ public class UserInfoServiceImpl implements UserInfoService {
      * Репозиторий пользователей
      */
     private final UserRepository userRepository;
+    private final SecurityAuthClient securityAuthClient;
 
-    public UserInfoServiceImpl(UserRepository userRepository) {
+    public UserInfoServiceImpl(UserRepository userRepository,
+                               SecurityAuthClient securityAuthClient) {
         this.userRepository = userRepository;
+        this.securityAuthClient = securityAuthClient;
     }
 
     /**
@@ -38,6 +42,11 @@ public class UserInfoServiceImpl implements UserInfoService {
     public User getUserByLogin(String login) {
         return userRepository.findByLogin(login)
                 .orElseThrow(() -> new IllegalArgumentException("Пользователь с таким логином не найден"));
+    }
+
+    @Override
+    public User getCurrentUser(String token) {
+        return securityAuthClient.getCurrentAuthUser(token);
     }
 
     @Override
