@@ -11,19 +11,19 @@ import org.springframework.web.client.RestTemplate;
  */
 @RestController
 @RequestMapping("/users")
-public class Controller {
+public class UserController {
 
     /**
      * Сервис с логикой управления пользователями
      */
     private final UserService userService;
 
-    public Controller(UserService userService, RestTemplate restTemplate) {
+    public UserController(UserService userService, RestTemplate restTemplate) {
         this.userService = userService;
     }
 
     /**
-     * Запрос на обновление пользователя
+     * Обновление пользователя
      *
      * @param user тело запроса с данными о пользователе
      * @return статус ответа сервера
@@ -31,28 +31,6 @@ public class Controller {
     @PostMapping("/update")
     public ResponseEntity<User> update(@RequestBody User user) {
         return ResponseEntity.ok(userService.updateUser(user));
-    }
-
-    /**
-     * Запрос на получение пользователя по ID
-     *
-     * @param id user ID
-     * @return пользователь
-     */
-    @GetMapping("/getUserById/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUserById(id));
-    }
-
-    /**
-     * Запрос на получение пользователя по логину
-     *
-     * @param login логин
-     * @return пользователь
-     */
-    @GetMapping("/getUserByLogin/{login}")
-    public ResponseEntity<User> getUserByLogin(@PathVariable String login) {
-        return ResponseEntity.ok(userService.getUserByLogin(login));
     }
 
     /**

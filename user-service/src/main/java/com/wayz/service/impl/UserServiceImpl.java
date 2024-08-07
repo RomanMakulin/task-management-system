@@ -2,6 +2,7 @@ package com.wayz.service.impl;
 
 import com.wayz.model.User;
 import com.wayz.repository.UserRepository;
+import com.wayz.service.UserInfoService;
 import com.wayz.service.UserService;
 import com.wayz.service.UserUpdateService;
 
@@ -31,13 +32,16 @@ public class UserServiceImpl implements UserService {
      */
     private final UserRepository userRepository;
 
+    private final UserInfoService userInfoService;
+
     /**
      * Сервис обновления пользователей
      */
     private final UserUpdateService userUpdateServiceImpl;
 
-    public UserServiceImpl(UserRepository userRepository, UserUpdateService userUpdateServiceImpl) {
+    public UserServiceImpl(UserRepository userRepository, UserInfoService userInfoService, UserUpdateService userUpdateServiceImpl) {
         this.userRepository = userRepository;
+        this.userInfoService = userInfoService;
         this.userUpdateServiceImpl = userUpdateServiceImpl;
     }
 
@@ -52,28 +56,6 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Получение пользователя по ID
-     *
-     * @param id уникальный идентификатор
-     * @return пользователь
-     */
-    @Override
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
-    }
-
-    /**
-     * Получение пользователя по логину из БД
-     *
-     * @param login логин для поиска
-     * @return объект пользователя найденный из БД
-     */
-    @Override
-    public User getUserByLogin(String login) {
-        return userRepository.findByLogin(login).orElse(null);
-    }
-
-    /**
      * Удаление пользователя из системы
      *
      * @param id идентификатор пользователя
@@ -81,7 +63,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResponseEntity<String> deleteUser(Long id) {
-        if (userRepository.existsById(id)) {
+        if (userInfoService.existsById(id)) {
             userRepository.deleteById(id);
             return ResponseEntity.ok("Deleted user with id " + id);
         }

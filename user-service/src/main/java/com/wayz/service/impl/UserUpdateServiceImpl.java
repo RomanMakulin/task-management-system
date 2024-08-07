@@ -2,6 +2,7 @@ package com.wayz.service.impl;
 
 import com.wayz.model.User;
 import com.wayz.repository.UserRepository;
+import com.wayz.service.UserInfoService;
 import com.wayz.service.UserUpdateService;
 import lombok.Data;
 import org.slf4j.Logger;
@@ -32,8 +33,11 @@ public class UserUpdateServiceImpl implements UserUpdateService {
      */
     private final UserRepository userRepository;
 
-    public UserUpdateServiceImpl(UserRepository userRepository) {
+    private final UserInfoService userInfoService;
+
+    public UserUpdateServiceImpl(UserRepository userRepository, UserInfoService userInfoService) {
         this.userRepository = userRepository;
+        this.userInfoService = userInfoService;
     }
 
     /**
@@ -43,14 +47,8 @@ public class UserUpdateServiceImpl implements UserUpdateService {
      */
     @Override
     public User updateUser(User userToUpdateDetails) {
-        Optional<User> optionalCurrentUser = userRepository.findByLogin(userToUpdateDetails.getLogin());
-        User userToUpdate = optionalCurrentUser.orElseThrow(() -> {
-            log.error("User update error. Can't find user by login: {}", userToUpdateDetails.getLogin());
-            return new IllegalArgumentException("User update error. Can't find user by login: " + userToUpdateDetails.getLogin());
-        });
-
+        User userToUpdate = userInfoService.getUserByLogin(userToUpdateDetails.getLogin());
         copyNonNullProperties(userToUpdateDetails, userToUpdate);
-
         userRepository.save(userToUpdate);
         log.info("User updated successfully: {}", userToUpdateDetails.getLogin());
         return userToUpdate;
